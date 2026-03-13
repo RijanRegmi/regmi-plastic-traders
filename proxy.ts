@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isLoginPage = pathname === "/admin/login";
@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
 }
 
 // Also export as default for Turbopack compatibility
-export default middleware;
+export default proxy;
 
 export const config = {
   matcher: ["/admin/:path*"],
