@@ -74,9 +74,7 @@ async function getHomeData() {
         ? (await blogRes.value.json()).data || []
         : [];
 
-    // Merge global → home (home-specific keys win)
     const merged = { ...globalCms, ...homeCms } as Record<string, unknown>;
-    // Pre-unwrap all values
     const cms: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(merged)) cms[k] = unwrap(v);
 
@@ -123,8 +121,6 @@ export default async function HomePage() {
   const reviewCount = (stats.count as number) || 2400;
 
   // ── Hero background ───────────────────────────────────────────────────────
-  // heroBgImage is a path like /uploads/background/bg-123.jpg
-  // If not set, falls back to pure CSS gradient (no static import needed)
   const heroBgPath = str(cms.heroBgImage, "");
   const heroBgUrl = heroBgPath ? `${API_BASE}${heroBgPath}` : "";
 
@@ -238,18 +234,12 @@ export default async function HomePage() {
       <section className="rpt-hero">
         <div className="rpt-hero__bg">
           <div className="rpt-hero__bg-base" />
-
-          {/* ── CMS-controlled background photo ──
-              If heroBgImage is set in the DB, we render it here.
-              The same dark overlay layers sit on top as before so
-              readability is never affected.                         */}
           {heroBgUrl && (
             <div
               className="rpt-hero__bg-img"
               style={{ backgroundImage: `url(${heroBgUrl})` }}
             />
           )}
-
           <div className="rpt-hero__bg-glow1" />
           <div className="rpt-hero__bg-glow2" />
           <div className="rpt-hero__bg-grid" />
@@ -360,7 +350,11 @@ export default async function HomePage() {
               </div>
 
               <div className="rpt-about__right">
-                <div className="rpt-about__card">
+                {/* ── Card — rating badge now sits INSIDE the card flow ── */}
+                <div
+                  className="rpt-about__card"
+                  style={{ paddingBottom: "40px" }}
+                >
                   <div className="rpt-about__card-inner">
                     <div className="rpt-about__card-emoji">
                       {aboutCardEmoji}
@@ -384,21 +378,45 @@ export default async function HomePage() {
                           </div>
                         ))}
                     </div>
-                  </div>
-                  <div className="rpt-about__rating-badge">
-                    <span className="rpt-about__rating-num">
-                      {avgRating.toFixed(1)}
-                    </span>
+
+                    {/* Rating badge — inline, no longer absolutely positioned */}
                     <div
                       style={{
                         display: "flex",
-                        flexDirection: "column",
-                        gap: "4px",
+                        alignItems: "center",
+                        gap: "14px",
+                        background: "white",
+                        border: "1px solid var(--border)",
+                        borderRadius: "18px",
+                        padding: "14px 20px",
+                        boxShadow: "0 8px 28px rgba(0,0,0,0.1)",
+                        marginTop: "24px",
+                        width: "100%",
+                        justifyContent: "center",
                       }}
                     >
-                      <Stars rating={avgRating} size={14} />
-                      <div className="rpt-about__rating-lbl">
-                        {reviewCount.toLocaleString()}+ Google Reviews
+                      <span
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: "34px",
+                          fontWeight: 800,
+                          color: "var(--yellow)",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {avgRating.toFixed(1)}
+                      </span>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "4px",
+                        }}
+                      >
+                        <Stars rating={avgRating} size={14} />
+                        <div className="rpt-about__rating-lbl">
+                          {reviewCount.toLocaleString()}+ Google Reviews
+                        </div>
                       </div>
                     </div>
                   </div>

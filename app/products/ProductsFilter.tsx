@@ -32,59 +32,74 @@ export default function ProductsFilter({
     startTransition(() => router.push(`${pathname}?${params.toString()}`));
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     updateParams({ search: search || undefined, page: undefined });
   };
 
+  const hasFilters = !!(currentSearch || currentCategory);
+
   return (
     <div className="rpt-filter">
-      <form onSubmit={handleSearchSubmit} className="rpt-filter__search">
+      {/* ── Search bar — full width with button inside ── */}
+      <form onSubmit={handleSearch} className="rpt-filter__search">
         <div className="rpt-filter__search-wrap">
-          <FiSearch size={15} className="rpt-filter__search-icon" />
+          <FiSearch size={16} className="rpt-filter__search-icon" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
-            className="rpt-input rpt-filter__input"
+            className="rpt-filter__input"
           />
         </div>
-        <button
-          type="submit"
-          className="rpt-btn-primary"
-          style={{ padding: "12px 24px", fontSize: "13px" }}
-        >
+        <button type="submit" className="rpt-filter__submit">
           Search
         </button>
-        {(currentSearch || currentCategory) && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearch("");
-              updateParams({ search: undefined, category: undefined });
-            }}
-            className="rpt-filter__clear"
-          >
-            <FiX size={13} /> Clear
-          </button>
-        )}
       </form>
-      <div className="rpt-filter__cats">
+
+      {/* ── Category pills + clear ── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "wrap",
+        }}
+      >
         <button
-          onClick={() => updateParams({ category: undefined })}
-          className={`rpt-filter__cat ${!currentCategory ? "rpt-filter__cat--active" : ""}`}
+          onClick={() => updateParams({ category: undefined, page: undefined })}
+          className={`rpt-filter__cat${
+            !currentCategory ? " rpt-filter__cat--active" : ""
+          }`}
         >
           All
         </button>
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => updateParams({ category: cat })}
-            className={`rpt-filter__cat ${currentCategory === cat ? "rpt-filter__cat--active" : ""}`}
+            onClick={() => updateParams({ category: cat, page: undefined })}
+            className={`rpt-filter__cat${
+              currentCategory === cat ? " rpt-filter__cat--active" : ""
+            }`}
           >
             {cat}
           </button>
         ))}
+        {hasFilters && (
+          <button
+            onClick={() => {
+              setSearch("");
+              updateParams({
+                search: undefined,
+                category: undefined,
+                page: undefined,
+              });
+            }}
+            className="rpt-filter__clear"
+          >
+            <FiX size={12} /> Clear filters
+          </button>
+        )}
       </div>
     </div>
   );

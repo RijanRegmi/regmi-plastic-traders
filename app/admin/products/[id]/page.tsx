@@ -1,11 +1,20 @@
 "use client";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { productApi } from "@/lib/api";
 import toast from "react-hot-toast";
-import { FiSave, FiArrowLeft, FiExternalLink } from "react-icons/fi";
-import ImageUploader from "@/components/ui/ImageUploader";
+import {
+  FiSave,
+  FiArrowLeft,
+  FiExternalLink,
+  FiUpload,
+  FiX,
+  FiImage,
+  FiPlus,
+} from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
+
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
 const CATEGORIES = [
   "Household",
@@ -26,6 +35,7 @@ const BADGES = [
   "Sale",
   "Limited",
 ];
+
 const EMPTY = {
   name: "",
   description: "",
@@ -39,11 +49,12 @@ const EMPTY = {
   featured: false,
   isActive: true,
 };
+
 interface FormState {
   [key: string]: string | boolean;
 }
 
-// ─── Module-level constants (never re-created on render) ──────────────────────
+// ── Input style ──────────────────────────────────────────────────────────────
 const IS: React.CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
@@ -73,11 +84,7 @@ const onBlur = (
   e.currentTarget.style.boxShadow = "none";
 };
 
-// ─── Sub-components OUTSIDE the page component ────────────────────────────────
-// IMPORTANT: never define components inside another component — React will
-// treat them as new component types on every render and unmount/remount them,
-// causing inputs to lose focus after each keystroke.
-
+// ── Sub-components ───────────────────────────────────────────────────────────
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <label
@@ -203,7 +210,429 @@ function Toggle({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ── Multi-Image Uploader ─────────────────────────────────────────────────────
+interface ImageItem {
+  url: string; // final server URL
+  preview?: string; // local blob for display while uploading
+  uploading?: boolean;
+  error?: boolean;
+}
+
+function MultiImageUploader({
+  images,
+  onChange,
+}: {
+  images: string[];
+  onChange: (urls: string[]) => void;
+}) {
+  const [items, setItems] = useState<ImageItem[]>(
+    images.map((url) => ({ url })),
+  );
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("token") || sessionStorage.getItem("token")
+      : "";
+
+  // Keep parent in sync
+  useEffect(() => {
+    const urls = items
+      .filter((i) => i.url && !i.uploading && !i.error)
+      .map((i) => i.url);
+    onChange(urls);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
+
+  const uploadFile = async (file: File, idx: number) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch(`${API}/admin/upload/single`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      const url: string = data.data?.url || data.data?.path || "";
+      setItems((prev) => {
+        const next = [...prev];
+        next[idx] = { url, uploading: false };
+        return next;
+      });
+    } catch {
+      setItems((prev) => {
+        const next = [...prev];
+        next[idx] = { ...next[idx], uploading: false, error: true };
+        return next;
+      });
+      toast.error(`Failed to upload ${file.name}`);
+    }
+  };
+
+  const addFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const arr = Array.from(files);
+    const startIdx = items.length;
+    const newItems: ImageItem[] = arr.map((f) => ({
+      url: "",
+      preview: URL.createObjectURL(f),
+      uploading: true,
+    }));
+    setItems((prev) => [...prev, ...newItems]);
+    arr.forEach((f, i) => uploadFile(f, startIdx + i));
+  };
+
+  const remove = (idx: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const moveLeft = (idx: number) => {
+    if (idx === 0) return;
+    setItems((prev) => {
+      const next = [...prev];
+      [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+      return next;
+    });
+  };
+
+  const moveRight = (idx: number) => {
+    setItems((prev) => {
+      if (idx >= prev.length - 1) return prev;
+      const next = [...prev];
+      [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+      return next;
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Upload Zone */}
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          addFiles(e.dataTransfer.files);
+        }}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border: `2px dashed ${dragging ? C.red : C.border}`,
+          borderRadius: 14,
+          padding: "28px 20px",
+          textAlign: "center",
+          cursor: "pointer",
+          background: dragging
+            ? "rgba(192,57,43,0.06)"
+            : "rgba(255,255,255,0.02)",
+          transition: "border-color 0.2s, background 0.2s",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 12,
+              background: "rgba(192,57,43,0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: C.red,
+            }}
+          >
+            <FiUpload size={20} />
+          </div>
+          <p
+            style={{
+              fontFamily: F.ui,
+              fontSize: 13,
+              fontWeight: 700,
+              color: C.text2,
+              margin: 0,
+            }}
+          >
+            Drop images here or <span style={{ color: C.red }}>browse</span>
+          </p>
+          <p
+            style={{
+              fontFamily: F.body,
+              fontSize: 11,
+              color: C.text4,
+              margin: 0,
+            }}
+          >
+            JPG, PNG, WebP — max 5 MB each — up to 5 images
+          </p>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          style={{ display: "none" }}
+          onChange={(e) => addFiles(e.target.files)}
+        />
+      </div>
+
+      {/* Image Grid */}
+      {items.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+            gap: 10,
+          }}
+        >
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              style={{
+                position: "relative",
+                borderRadius: 12,
+                overflow: "hidden",
+                border: `1px solid ${item.error ? "rgba(192,57,43,0.5)" : C.border}`,
+                background: "rgba(255,255,255,0.04)",
+                aspectRatio: "1",
+              }}
+            >
+              {/* Image */}
+              {(item.preview || item.url) && (
+                <img
+                  src={item.preview || item.url}
+                  alt={`Product image ${idx + 1}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              )}
+
+              {/* Loading overlay */}
+              {item.uploading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "rgba(0,0,0,0.6)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      border: "2px solid rgba(255,255,255,0.3)",
+                      borderTopColor: "white",
+                      borderRadius: "50%",
+                      animation: "spin 0.8s linear infinite",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: F.body,
+                      fontSize: 10,
+                      color: "rgba(255,255,255,0.8)",
+                    }}
+                  >
+                    Uploading…
+                  </span>
+                </div>
+              )}
+
+              {/* Error overlay */}
+              {item.error && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "rgba(192,57,43,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: F.body,
+                      fontSize: 10,
+                      color: "#f87171",
+                    }}
+                  >
+                    Error
+                  </span>
+                </div>
+              )}
+
+              {/* Primary badge */}
+              {idx === 0 && !item.uploading && !item.error && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 6,
+                    left: 6,
+                    background: C.red,
+                    color: "white",
+                    fontFamily: F.ui,
+                    fontSize: 8,
+                    fontWeight: 700,
+                    letterSpacing: "0.08em",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                  }}
+                >
+                  MAIN
+                </div>
+              )}
+
+              {/* Controls */}
+              {!item.uploading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: "4px 6px",
+                    background: "rgba(0,0,0,0.65)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: 2 }}>
+                    <button
+                      type="button"
+                      onClick={() => moveLeft(idx)}
+                      disabled={idx === 0}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        background: "none",
+                        border: "none",
+                        color: idx === 0 ? "rgba(255,255,255,0.25)" : "white",
+                        cursor: idx === 0 ? "default" : "pointer",
+                        fontSize: 12,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveRight(idx)}
+                      disabled={idx === items.length - 1}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        background: "none",
+                        border: "none",
+                        color:
+                          idx === items.length - 1
+                            ? "rgba(255,255,255,0.25)"
+                            : "white",
+                        cursor:
+                          idx === items.length - 1 ? "default" : "pointer",
+                        fontSize: 12,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      ›
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => remove(idx)}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      background: "rgba(192,57,43,0.8)",
+                      border: "none",
+                      color: "white",
+                      cursor: "pointer",
+                      borderRadius: 4,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <FiX size={10} />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Add more button */}
+          {items.length < 5 && (
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              style={{
+                aspectRatio: "1",
+                borderRadius: 12,
+                border: `2px dashed ${C.border}`,
+                background: "rgba(255,255,255,0.02)",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                color: C.text4,
+                transition: "border-color 0.2s, color 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = C.red;
+                e.currentTarget.style.color = C.red;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = C.border;
+                e.currentTarget.style.color = C.text4;
+              }}
+            >
+              <FiPlus size={18} />
+              <span style={{ fontFamily: F.body, fontSize: 10 }}>Add</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {items.length > 0 && (
+        <p
+          style={{
+            fontFamily: F.body,
+            fontSize: 11,
+            color: C.text4,
+            margin: 0,
+          }}
+        >
+          First image is shown as main. Use ‹ › to reorder.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function ProductFormPage() {
   const router = useRouter();
   const params = useParams();
@@ -358,7 +787,7 @@ export default function ProductFormPage() {
         onSubmit={handleSubmit}
         style={{ display: "flex", flexDirection: "column", gap: 16 }}
       >
-        {/* Basic Info */}
+        {/* ── Basic Info ── */}
         <Section title="Basic Information">
           <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
             <Label>Product Name *</Label>
@@ -378,9 +807,9 @@ export default function ProductFormPage() {
               value={form.description as string}
               onChange={(e) => set("description", e.target.value)}
               required
-              rows={3}
-              style={{ ...IS, resize: "none" }}
-              placeholder="Describe the product…"
+              rows={4}
+              style={{ ...IS, resize: "vertical" }}
+              placeholder="Describe the product in detail…"
               onFocus={onFocus}
               onBlur={onBlur}
             />
@@ -395,7 +824,7 @@ export default function ProductFormPage() {
                 gap: 7,
               }}
             >
-              <Label>Price (₨) *</Label>
+              <Label>Price (Rs) *</Label>
               <input
                 type="number"
                 value={form.price as string}
@@ -435,7 +864,7 @@ export default function ProductFormPage() {
           </div>
         </Section>
 
-        {/* Images */}
+        {/* ── Product Images ── */}
         <div
           style={{
             background: C.bg3,
@@ -448,6 +877,9 @@ export default function ProductFormPage() {
             style={{
               padding: "13px 22px",
               borderBottom: `1px solid ${C.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
             <p
@@ -463,13 +895,26 @@ export default function ProductFormPage() {
             >
               Product Images
             </p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: F.body,
+                fontSize: 11,
+                color: C.text4,
+              }}
+            >
+              <FiImage size={12} />
+              {images.length} / 5 uploaded
+            </div>
           </div>
           <div style={{ padding: 22 }}>
-            <ImageUploader images={images} onChange={setImages} />
+            <MultiImageUploader images={images} onChange={setImages} />
           </div>
         </div>
 
-        {/* Daraz */}
+        {/* ── Daraz Link ── */}
         <Section title="Daraz Link">
           <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
             <Label>Daraz Product URL *</Label>
@@ -491,7 +936,7 @@ export default function ProductFormPage() {
                 margin: 0,
               }}
             >
-              Users are redirected here when clicking the product.
+              Customers are redirected here when clicking "Buy on Daraz".
             </p>
           </div>
           {form.darazLink && (
@@ -515,79 +960,115 @@ export default function ProductFormPage() {
           )}
         </Section>
 
-        {/* Badge & Ratings */}
+        {/* ── Badge & Ratings ── */}
         <Section title="Badge & Ratings">
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-            {(
-              [
-                {
-                  label: "Badge",
-                  key: "badge",
-                  isSelect: true,
-                  opts: BADGES.map((b) => ({ v: b, l: b || "None" })),
-                },
-                {
-                  label: "Rating (0–5)",
-                  key: "rating",
-                  type: "number",
-                  step: "0.1",
-                  min: "0",
-                  max: "5",
-                },
-                {
-                  label: "Review Count",
-                  key: "reviewCount",
-                  type: "number",
-                  min: "0",
-                },
-              ] as const
-            ).map(
-              ({ label, key, isSelect, opts, type, step, min, max }: any) => (
-                <div
-                  key={key}
-                  style={{
-                    flex: 1,
-                    minWidth: 120,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 7,
-                  }}
-                >
-                  <Label>{label}</Label>
-                  {isSelect ? (
-                    <select
-                      value={form[key] as string}
-                      onChange={(e) => set(key, e.target.value)}
-                      style={{ ...IS, background: C.bg4, cursor: "pointer" }}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                    >
-                      {opts!.map((o: any) => (
-                        <option key={o.v} value={o.v}>
-                          {o.l}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type={type}
-                      step={step}
-                      min={min}
-                      max={max}
-                      value={form[key] as string}
-                      onChange={(e) => set(key, e.target.value)}
-                      style={IS}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                    />
-                  )}
-                </div>
-              ),
-            )}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 120,
+                display: "flex",
+                flexDirection: "column",
+                gap: 7,
+              }}
+            >
+              <Label>Badge</Label>
+              <select
+                value={form.badge as string}
+                onChange={(e) => set("badge", e.target.value)}
+                style={{ ...IS, background: C.bg4, cursor: "pointer" }}
+                onFocus={onFocus}
+                onBlur={onBlur}
+              >
+                {BADGES.map((b) => (
+                  <option key={b} value={b}>
+                    {b || "None"}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                minWidth: 120,
+                display: "flex",
+                flexDirection: "column",
+                gap: 7,
+              }}
+            >
+              <Label>Rating (0–5)</Label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={form.rating as string}
+                onChange={(e) => set("rating", e.target.value)}
+                style={IS}
+                onFocus={onFocus}
+                onBlur={onBlur}
+              />
+            </div>
+            <div
+              style={{
+                flex: 1,
+                minWidth: 120,
+                display: "flex",
+                flexDirection: "column",
+                gap: 7,
+              }}
+            >
+              <Label>Review Count</Label>
+              <input
+                type="number"
+                min="0"
+                value={form.reviewCount as string}
+                onChange={(e) => set("reviewCount", e.target.value)}
+                style={IS}
+                onFocus={onFocus}
+                onBlur={onBlur}
+              />
+            </div>
           </div>
+          {/* Badge Preview */}
+          {form.badge && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span
+                style={{ fontFamily: F.body, fontSize: 11, color: C.text4 }}
+              >
+                Preview:
+              </span>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "3px 10px",
+                  borderRadius: 999,
+                  fontFamily: F.ui,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  background:
+                    form.badge === "New"
+                      ? "rgba(39,174,96,0.15)"
+                      : form.badge === "Top Rated"
+                        ? "rgba(230,126,0,0.15)"
+                        : "rgba(192,57,43,0.12)",
+                  color:
+                    form.badge === "New"
+                      ? "#27ae60"
+                      : form.badge === "Top Rated"
+                        ? C.yellow
+                        : C.red,
+                }}
+              >
+                {form.badge as string}
+              </span>
+            </div>
+          )}
         </Section>
 
-        {/* Visibility */}
+        {/* ── Visibility ── */}
         <div
           style={{
             background: C.bg3,
@@ -642,7 +1123,7 @@ export default function ProductFormPage() {
           </div>
         </div>
 
-        {/* Submit */}
+        {/* ── Submit ── */}
         <div style={{ display: "flex", gap: 12 }}>
           <button
             type="submit"

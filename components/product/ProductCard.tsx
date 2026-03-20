@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FiExternalLink, FiStar } from "react-icons/fi";
 import { Product } from "@/types";
 
@@ -11,7 +12,7 @@ function Stars({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((i) => (
         <FiStar
           key={i}
-          size={12}
+          size={13}
           className={i <= Math.round(rating) ? "rpt-star--on" : "rpt-star--off"}
         />
       ))}
@@ -20,68 +21,67 @@ function Stars({ rating }: { rating: number }) {
 }
 
 const BADGE_CLASS: Record<string, string> = {
-  "Best Seller": "rpt-product-card__badge--red",
-  Popular: "rpt-product-card__badge--orange",
-  New: "rpt-product-card__badge--green",
-  "Top Rated": "rpt-product-card__badge--yellow",
+  "Best Seller": "rpt-pc__badge--red",
+  Popular: "rpt-pc__badge--orange",
+  New: "rpt-pc__badge--green",
+  "Top Rated": "rpt-pc__badge--yellow",
+  Sale: "rpt-pc__badge--orange",
+  Limited: "rpt-pc__badge--red",
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const firstImage = product.images?.[0];
+
   return (
-    <div className="rpt-product-card">
-      {/* Image / placeholder */}
-      <div className="rpt-product-card__img-wrap">
-        {product.images?.[0] ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="rpt-product-card__img"
-          />
+    <div className="rpt-pc">
+      {/* ── Image ── */}
+      <Link href={`/products/${product.slug}`} className="rpt-pc__img-wrap">
+        {firstImage ? (
+          <img src={firstImage} alt={product.name} className="rpt-pc__img" />
         ) : (
-          <span className="rpt-product-card__placeholder">📦</span>
+          <div className="rpt-pc__no-img">📦</div>
         )}
 
         {product.badge && (
           <span
-            className={`rpt-product-card__badge ${BADGE_CLASS[product.badge] || "rpt-product-card__badge--red"}`}
+            className={`rpt-pc__badge ${
+              BADGE_CLASS[product.badge] || "rpt-pc__badge--red"
+            }`}
           >
             {product.badge}
           </span>
         )}
 
         {!product.inStock && (
-          <div className="rpt-product-card__oos">
-            <span className="rpt-product-card__oos-label">Out of Stock</span>
+          <div className="rpt-pc__oos">
+            <span className="rpt-pc__oos-label">Out of Stock</span>
           </div>
         )}
-      </div>
+      </Link>
 
-      {/* Body */}
-      <div className="rpt-product-card__body">
-        <div className="rpt-product-card__cat">{product.category}</div>
-        <h3 className="rpt-product-card__name">{product.name}</h3>
+      {/* ── Body ── */}
+      <div className="rpt-pc__body">
+        <Link href={`/products/${product.slug}`} className="rpt-pc__name-link">
+          <h3 className="rpt-pc__name">{product.name}</h3>
+        </Link>
 
-        <div className="rpt-product-card__stars">
+        <p className="rpt-pc__desc">{product.description}</p>
+
+        <div className="rpt-pc__stars-row">
           <Stars rating={product.rating} />
-          <span className="rpt-product-card__review-count">
-            ({product.reviewCount})
-          </span>
+          <span className="rpt-pc__review-count">({product.reviewCount})</span>
         </div>
 
-        <p className="rpt-product-card__desc">{product.description}</p>
-
-        <div className="rpt-product-card__price">
-          ₨ {product.price.toLocaleString()}
-        </div>
+        <div className="rpt-pc__price">Rs {product.price.toLocaleString()}</div>
 
         <a
           href={product.darazLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="rpt-product-card__btn"
+          className="rpt-pc__buy-btn"
         >
           <FiExternalLink size={13} />
-          Buy on Daraz
+          BUY ON DARAZ
         </a>
       </div>
     </div>

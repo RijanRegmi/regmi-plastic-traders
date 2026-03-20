@@ -31,7 +31,6 @@ export default function Header({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // Client-side CMS state — used only if parent didn't pass cms
   const [cms, setCms] = useState<Record<string, unknown>>(cmsProp ?? {});
 
   const isHome = pathname === "/";
@@ -44,9 +43,6 @@ export default function Header({
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  // If no cms was passed from the server, fetch it client-side so
-  // logo/phone/nav labels are always available regardless of which page
-  // renders the Header.
   useEffect(() => {
     if (cmsProp && Object.keys(cmsProp).length > 0) {
       setCms(cmsProp);
@@ -57,12 +53,9 @@ export default function Header({
       .then((json) => {
         if (json?.data) setCms(json.data);
       })
-      .catch(() => {
-        /* silently ignore — defaults will show */
-      });
+      .catch(() => {});
   }, [cmsProp]);
 
-  // Keep cms in sync when cmsProp changes (server re-renders)
   useEffect(() => {
     if (cmsProp && Object.keys(cmsProp).length > 0) setCms(cmsProp);
   }, [cmsProp]);
@@ -101,8 +94,11 @@ export default function Header({
 
       <div className="rpt-header__inner">
         <Link href="/" className="rpt-logo">
-          {/* Transparent logo frame — fits any image size/shape */}
-          <div className="rpt-logo__icon">
+          {/* Logo icon — increased from 44px to 56px */}
+          <div
+            className="rpt-logo__icon"
+            style={{ width: "56px", height: "56px", fontSize: "24px" }}
+          >
             {logoUrl ? (
               <img
                 src={`${API_BASE}${logoUrl}`}
@@ -119,7 +115,9 @@ export default function Header({
             )}
           </div>
           <div>
-            <div className="rpt-logo__name">{storeName}</div>
+            <div className="rpt-logo__name" style={{ fontSize: "16px" }}>
+              {storeName}
+            </div>
             <div className="rpt-logo__sub">Est. {estYear} · Nepal</div>
           </div>
         </Link>

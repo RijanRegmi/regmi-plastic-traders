@@ -59,66 +59,100 @@ export default async function ProductsPage({
   const resolvedParams = await searchParams;
   const { products, categories, cms } = await getProductsData(resolvedParams);
 
-  const pageTitle = (cms.pageTitle as string) || "Our Products";
+  const storeName = (cms.storeName as string) || "Regmi Plastic Traders";
+  const pageTitle = (cms.pageTitle as string) || storeName.toUpperCase();
   const pageSubtitle =
     (cms.pageSubtitle as string) ||
     "Quality plastic products — click any item to buy on Daraz";
-  const storeName = (cms.storeName as string) || "Regmi Plastic Traders";
+  const totalProducts = products.pagination?.total || 0;
+  const shownProducts = products.data?.length || 0;
 
   return (
     <div className="rpt-page">
       <Header storeName={storeName} />
 
-      <div className="rpt-page-hero">
-        <div className="rpt-page-hero__bg" />
-        <div className="rpt-page-hero__content">
-          <p className="rpt-label">Quality Selection</p>
-          <h1 className="rpt-page-hero__title">{pageTitle}</h1>
-          <p className="rpt-page-hero__sub">{pageSubtitle}</p>
+      <main className="rpt-products-page">
+        {/* ── Page header ── */}
+        <div className="rpt-products-page__head">
+          <h1 className="rpt-products-page__title">{pageTitle}</h1>
+          <p className="rpt-products-page__sub">{pageSubtitle}</p>
         </div>
-      </div>
 
-      <main className="rpt-page-body">
-        <section
-          className="rpt-section"
-          style={{ paddingTop: "60px", paddingBottom: "96px" }}
-        >
-          <div className="rpt-container">
-            <ProductsFilter
-              categories={categories.data as string[]}
-              currentCategory={resolvedParams.category}
-              currentSearch={resolvedParams.search}
-            />
+        <div className="rpt-products-page__body">
+          {/* ── Filter ── */}
+          <ProductsFilter
+            categories={categories.data as string[]}
+            currentCategory={resolvedParams.category}
+            currentSearch={resolvedParams.search}
+          />
 
-            <div className="rpt-products-count">
-              Showing {products.data?.length || 0} of{" "}
-              {products.pagination?.total || 0} products
-              {resolvedParams.category && (
-                <span className="rpt-products-count__cat">
-                  {" "}
-                  in &ldquo;{resolvedParams.category}&rdquo;
-                </span>
-              )}
-            </div>
-
-            {products.data?.length > 0 ? (
-              <div className="rpt-products-grid">
-                {products.data.map((p: Product) => (
-                  <ProductCard key={p._id} product={p} />
-                ))}
-              </div>
-            ) : (
-              <div className="rpt-empty-state">
-                <div className="rpt-empty-state__emoji">🔍</div>
-                <h3 className="rpt-empty-state__title">No products found</h3>
-                <p className="rpt-empty-state__sub">
-                  Try a different search or category
-                </p>
-              </div>
+          {/* ── Count ── */}
+          <p className="rpt-products-page__count">
+            Showing <strong>{shownProducts}</strong> of{" "}
+            <strong>{totalProducts}</strong> products
+            {resolvedParams.category && (
+              <span className="rpt-products-page__count-cat">
+                {" "}
+                in &ldquo;{resolvedParams.category}&rdquo;
+              </span>
             )}
-          </div>
-        </section>
+            {resolvedParams.search && (
+              <span className="rpt-products-page__count-cat">
+                {" "}
+                for &ldquo;{resolvedParams.search}&rdquo;
+              </span>
+            )}
+          </p>
+
+          {/* ── Grid ── */}
+          {products.data?.length > 0 ? (
+            <div className="rpt-products-page__grid">
+              {products.data.map((p: Product) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="rpt-empty-state">
+              <div className="rpt-empty-state__emoji">🔍</div>
+              <h3 className="rpt-empty-state__title">No products found</h3>
+              <p className="rpt-empty-state__sub">
+                Try a different search or category
+              </p>
+            </div>
+          )}
+
+          {/* ── Pagination ── */}
+          {products.pagination?.pages > 1 && (
+            <div className="rpt-products-page__pagination">
+              {Array.from(
+                { length: products.pagination.pages },
+                (_, i) => i + 1,
+              ).map((pg) => {
+                const p = new URLSearchParams();
+                if (resolvedParams.category)
+                  p.set("category", resolvedParams.category);
+                if (resolvedParams.search)
+                  p.set("search", resolvedParams.search);
+                p.set("page", String(pg));
+                return (
+                  <a
+                    key={pg}
+                    href={`/products?${p.toString()}`}
+                    className={`rpt-page-btn${
+                      Number(resolvedParams.page || 1) === pg
+                        ? " rpt-page-btn--active"
+                        : ""
+                    }`}
+                  >
+                    {pg}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </main>
+
       <Footer cms={cms} />
     </div>
   );

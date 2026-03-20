@@ -100,7 +100,7 @@ export default function Footer({ cms }: FooterProps) {
       style={{
         background: "#040406",
         borderTop: "1px solid rgba(255,255,255,0.05)",
-        fontFamily: "var(--font-body,'DM Sans',sans-serif)",
+        fontFamily: "var(--font-body,'Plus Jakarta Sans',sans-serif)",
       }}
     >
       {/* Accent line */}
@@ -145,16 +145,16 @@ export default function Footer({ cms }: FooterProps) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                gap: "14px",
                 marginBottom: "20px",
               }}
             >
-              {/* Logo — always transparent, no red background/border */}
+              {/* Logo — increased from 44px to 60px */}
               <div
                 style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "10px",
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "12px",
                   background: "transparent",
                   display: "flex",
                   alignItems: "center",
@@ -178,9 +178,9 @@ export default function Footer({ cms }: FooterProps) {
                   <span
                     style={{
                       fontFamily:
-                        "var(--font-display,'Cormorant Garamond',serif)",
-                      fontWeight: 700,
-                      fontSize: "22px",
+                        "var(--font-display,'Plus Jakarta Sans',sans-serif)",
+                      fontWeight: 800,
+                      fontSize: "28px",
                       color: "#c0392b",
                       lineHeight: 1,
                     }}
@@ -193,9 +193,9 @@ export default function Footer({ cms }: FooterProps) {
               <div>
                 <div
                   style={{
-                    fontFamily: "var(--font-ui,'Syne',sans-serif)",
+                    fontFamily: "var(--font-ui,'Plus Jakarta Sans',sans-serif)",
                     fontWeight: 800,
-                    fontSize: "15px",
+                    fontSize: "16px",
                     color: "white",
                   }}
                 >
@@ -207,7 +207,7 @@ export default function Footer({ cms }: FooterProps) {
                     letterSpacing: "0.22em",
                     textTransform: "uppercase",
                     color: "rgba(255,255,255,0.25)",
-                    marginTop: "2px",
+                    marginTop: "3px",
                   }}
                 >
                   Est. {estYear} · Nepal
@@ -261,7 +261,7 @@ export default function Footer({ cms }: FooterProps) {
           <div>
             <h4
               style={{
-                fontFamily: "var(--font-ui,'Syne',sans-serif)",
+                fontFamily: "var(--font-ui,'Plus Jakarta Sans',sans-serif)",
                 fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.22em",
@@ -297,7 +297,7 @@ export default function Footer({ cms }: FooterProps) {
           <div>
             <h4
               style={{
-                fontFamily: "var(--font-ui,'Syne',sans-serif)",
+                fontFamily: "var(--font-ui,'Plus Jakarta Sans',sans-serif)",
                 fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.22em",
@@ -377,7 +377,7 @@ export default function Footer({ cms }: FooterProps) {
           <div>
             <h4
               style={{
-                fontFamily: "var(--font-ui,'Syne',sans-serif)",
+                fontFamily: "var(--font-ui,'Plus Jakarta Sans',sans-serif)",
                 fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.22em",
@@ -427,7 +427,7 @@ export default function Footer({ cms }: FooterProps) {
             <div style={{ marginTop: "24px" }}>
               <h4
                 style={{
-                  fontFamily: "var(--font-ui,'Syne',sans-serif)",
+                  fontFamily: "var(--font-ui,'Plus Jakarta Sans',sans-serif)",
                   fontSize: "10px",
                   fontWeight: 700,
                   letterSpacing: "0.22em",

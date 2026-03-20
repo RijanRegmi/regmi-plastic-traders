@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import ProductCard from "./ProductCard";
+import ProductCard from "@/components/product/ProductCard";
 import { Product } from "@/types";
 
 export default function FeaturedCarousel({
@@ -42,16 +42,9 @@ export default function FeaturedCarousel({
     );
   }
 
-  // Use grid for ≤4 products
   if (products.length <= 4) {
     return (
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-          gap: "18px",
-        }}
-      >
+      <div className="rpt-products-page__grid">
         {products.map((p) => (
           <ProductCard key={p._id} product={p} />
         ))}
@@ -61,65 +54,39 @@ export default function FeaturedCarousel({
 
   return (
     <div style={{ position: "relative" }}>
-      {/* Left button */}
       <button
         onClick={() => scroll("left")}
-        className={`rpt-carousel-btn rpt-carousel-btn--left ${!canLeft ? "rpt-carousel-btn--hidden" : ""}`}
+        className={`rpt-carousel-btn rpt-carousel-btn--left${!canLeft ? " rpt-carousel-btn--hidden" : ""}`}
         aria-label="Scroll left"
       >
         <FiChevronLeft size={20} />
       </button>
 
-      {/* Scrollable row */}
       <div
         ref={scrollRef}
         onScroll={checkScroll}
         style={{
           display: "flex",
-          gap: "18px",
+          gap: 18,
           overflowX: "auto",
           scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          paddingBottom: "4px",
+          paddingBottom: 4,
         }}
       >
         {products.map((p) => (
-          <div key={p._id} style={{ flexShrink: 0, width: "280px" }}>
+          <div key={p._id} style={{ flexShrink: 0, width: 280 }}>
             <ProductCard product={p} />
           </div>
         ))}
       </div>
 
-      {/* Right button */}
       <button
         onClick={() => scroll("right")}
-        className={`rpt-carousel-btn rpt-carousel-btn--right ${!canRight ? "rpt-carousel-btn--hidden" : ""}`}
+        className={`rpt-carousel-btn rpt-carousel-btn--right${!canRight ? " rpt-carousel-btn--hidden" : ""}`}
         aria-label="Scroll right"
       >
         <FiChevronRight size={20} />
       </button>
-
-      {/* Dot indicators */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "6px",
-          marginTop: "24px",
-        }}
-      >
-        {products.map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: "6px",
-              height: "6px",
-              borderRadius: "50%",
-              background: "rgba(192,57,43,0.3)",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 }
