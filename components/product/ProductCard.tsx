@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { FiExternalLink, FiStar } from "react-icons/fi";
+import { FiStar } from "react-icons/fi";
+import { HiFire } from "react-icons/hi";
 import { Product } from "@/types";
+import { motion } from "framer-motion";
 
 interface ProductCardProps {
   product: Product;
@@ -8,7 +12,7 @@ interface ProductCardProps {
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span className="rpt-stars">
+    <div className="rpt-stars">
       {[1, 2, 3, 4, 5].map((i) => (
         <FiStar
           key={i}
@@ -16,7 +20,7 @@ function Stars({ rating }: { rating: number }) {
           className={i <= Math.round(rating) ? "rpt-star--on" : "rpt-star--off"}
         />
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -33,7 +37,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   const firstImage = product.images?.[0];
 
   return (
-    <div className="rpt-pc">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="rpt-pc"
+    >
       {/* ── Image ── */}
       <Link href={`/products/${product.slug}`} className="rpt-pc__img-wrap">
         {firstImage ? (
@@ -44,9 +53,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {product.badge && (
           <span
-            className={`rpt-pc__badge ${
-              BADGE_CLASS[product.badge] || "rpt-pc__badge--red"
-            }`}
+            className={`rpt-pc__badge ${BADGE_CLASS[product.badge] || "rpt-pc__badge--red"}`}
           >
             {product.badge}
           </span>
@@ -72,18 +79,25 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="rpt-pc__review-count">({product.reviewCount})</span>
         </div>
 
-        <div className="rpt-pc__price">Rs {product.price.toLocaleString()}</div>
+        {/* Price block */}
+        <div className="rpt-pc__price-block">
+          <span className="rpt-pc__price">
+            Rs {product.price.toLocaleString()}
+          </span>
+        </div>
 
-        <a
+        <motion.a
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           href={product.darazLink}
           target="_blank"
           rel="noopener noreferrer"
           className="rpt-pc__buy-btn"
         >
-          <FiExternalLink size={13} />
+          <HiFire size={14} />
           BUY ON DARAZ
-        </a>
+        </motion.a>
       </div>
-    </div>
+    </motion.div>
   );
 }

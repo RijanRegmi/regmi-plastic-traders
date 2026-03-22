@@ -1,6 +1,8 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -51,11 +53,11 @@ export default async function ContactPage() {
 
       <div className="rpt-page-hero">
         <div className="rpt-page-hero__bg" />
-        <div className="rpt-page-hero__content">
+        <Reveal direction="up" className="rpt-page-hero__content">
           <p className="rpt-label">Get in Touch</p>
           <h1 className="rpt-page-hero__title">Contact Us</h1>
           <p className="rpt-page-hero__sub">We&apos;d love to hear from you</p>
-        </div>
+        </Reveal>
       </div>
 
       <main className="rpt-page-body">
@@ -66,7 +68,7 @@ export default async function ContactPage() {
           <div className="rpt-container">
             <div className="rpt-contact-grid">
               {/* Left info */}
-              <div>
+              <Reveal direction="right">
                 <p className="rpt-label">Reach Us</p>
                 <h2 className="rpt-heading">
                   Let&apos;s{" "}
@@ -76,23 +78,25 @@ export default async function ContactPage() {
                   Have questions about our products or need bulk orders? Contact
                   us through any of the channels below.
                 </p>
-                <div className="rpt-contact-items">
+                <StaggerContainer className="rpt-contact-items">
                   {CONTACTS.map(({ icon: Icon, label, value, href }) => (
-                    <a key={label} href={href} className="rpt-contact-item">
-                      <div className="rpt-contact-item__icon">
-                        <Icon size={18} />
-                      </div>
-                      <div>
-                        <div className="rpt-contact-item__label">{label}</div>
-                        <div className="rpt-contact-item__value">{value}</div>
-                      </div>
-                    </a>
+                    <StaggerItem key={label}>
+                      <a href={href} className="rpt-contact-item">
+                        <div className="rpt-contact-item__icon">
+                          <Icon size={18} />
+                        </div>
+                        <div>
+                          <div className="rpt-contact-item__label">{label}</div>
+                          <div className="rpt-contact-item__value">{value}</div>
+                        </div>
+                      </a>
+                    </StaggerItem>
                   ))}
-                </div>
-              </div>
+                </StaggerContainer>
+              </Reveal>
 
               {/* Right form */}
-              <div className="rpt-contact-form-card">
+              <Reveal direction="left" delay={0.3} className="rpt-contact-form-card">
                 <h3 className="rpt-contact-form-card__title">Send a Message</h3>
                 <div className="rpt-form">
                   <div className="rpt-form-group">
@@ -115,7 +119,7 @@ export default async function ContactPage() {
                     Send Message
                   </button>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>

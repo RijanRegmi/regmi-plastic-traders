@@ -4,25 +4,30 @@ import Link from "next/link";
 import { BlogPost } from "@/types";
 import { FiCalendar, FiChevronRight } from "react-icons/fi";
 import BlogCarousel from "./../../components/blog/BlogCarousel";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
 
+export const dynamic = "force-dynamic";
+
 async function getBlogData() {
   try {
-    const [postsRes, cmsRes] = await Promise.allSettled([
-      fetch(`${API}/blog`, { next: { revalidate: 60 } }),
-      fetch(`${API}/cms/global`, { next: { revalidate: 60 } }),
+    const [postsRes, cmsGlobalRes, cmsBlogRes] = await Promise.allSettled([
+      fetch(`${API}/blog`, { cache: 'no-store' }),
+      fetch(`${API}/cms/global`, { cache: 'no-store' }),
+      fetch(`${API}/cms/blog`, { cache: 'no-store' }),
     ]);
+    const globalCms = cmsGlobalRes.status === "fulfilled" ? (await cmsGlobalRes.value.json()).data || {} : {};
+    const blogCms = cmsBlogRes.status === "fulfilled" ? (await cmsBlogRes.value.json()).data || {} : {};
+
     return {
       posts:
         postsRes.status === "fulfilled"
           ? (await postsRes.value.json()).data || []
           : [],
-      cms:
-        cmsRes.status === "fulfilled"
-          ? (await cmsRes.value.json()).data || {}
-          : {},
+      cms: { ...globalCms, ...blogCms }
     };
   } catch {
     return { posts: [], cms: {} };
@@ -47,6 +52,9 @@ export default async function BlogPage() {
     "Articles, guides and news from Regmi Plastic Traders",
   );
 
+  const blogBgPath = unwrap(cms?.blogBgImage, "");
+  const blogBgUrl = blogBgPath ? `${API_BASE}${blogBgPath}` : "";
+
   return (
     <div className="rpt-page">
       <Header
@@ -55,12 +63,19 @@ export default async function BlogPage() {
       />
 
       <div className="rpt-page-hero">
-        <div className="rpt-page-hero__bg" />
-        <div className="rpt-page-hero__content">
-          <p className="rpt-label">{sectionLabel}</p>
-          <h1 className="rpt-page-hero__title">Our Blog</h1>
-          <p className="rpt-page-hero__sub">{sectionSub}</p>
+        <div className="rpt-page-hero__bg">
+          {blogBgUrl && (
+            <div
+              className="rpt-page-hero__bg-img"
+              style={{ backgroundImage: `url(${blogBgUrl})` }}
+            />
+          )}
         </div>
+        <Reveal direction="up" className="rpt-page-hero__content">
+          <p className="rpt-label">{sectionLabel}</p>
+          <h1 className="rpt-page-hero__title">{sectionHeading}</h1>
+          <p className="rpt-page-hero__sub">{sectionSub}</p>
+        </Reveal>
       </div>
 
       <main className="rpt-page-body">
@@ -101,7 +116,7 @@ export default async function BlogPage() {
                       gap: 12,
                     }}
                   >
-                    <div>
+                    <Reveal direction="up">
                       <p className="rpt-label" style={{ marginBottom: 6 }}>
                         {sectionLabel}
                       </p>
@@ -117,7 +132,7 @@ export default async function BlogPage() {
                       >
                         {sectionHeading}
                       </h2>
-                    </div>
+                    </Reveal>
                   </div>
                   <BlogCarousel posts={posts.slice(0, 8)} />
                 </div>
@@ -130,95 +145,98 @@ export default async function BlogPage() {
               style={{ paddingTop: 64, paddingBottom: 96 }}
             >
               <div className="rpt-container">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    marginBottom: 28,
-                    flexWrap: "wrap",
-                    gap: 12,
-                  }}
-                >
-                  <div>
-                    <p className="rpt-label" style={{ marginBottom: 6 }}>
-                      All Articles
-                    </p>
-                    <h2
+                  <Reveal direction="up" style={{ width: "100%" }}>
+                    <div
                       style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: 28,
-                        fontWeight: 700,
-                        color: "var(--text-1)",
-                        margin: 0,
-                        letterSpacing: "-0.02em",
+                        display: "flex",
+                        alignItems: "flex-end",
+                        justifyContent: "space-between",
+                        marginBottom: 28,
+                        flexWrap: "wrap",
+                        gap: 12,
                       }}
                     >
-                      Browse Everything
-                    </h2>
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: 13,
-                      color: "var(--text-4)",
-                      margin: 0,
-                    }}
-                  >
-                    {posts.length} article{posts.length !== 1 ? "s" : ""}
-                  </p>
-                </div>
-
-                <div className="rpt-blog-grid">
-                  {posts.map((p: BlogPost) => (
-                    <Link
-                      key={p._id}
-                      href={`/blog/${p.slug}`}
-                      className="rpt-blog-card"
-                    >
-                      <div className="rpt-blog-card__img">
-                        {p.coverImage ? (
-                          <img
-                            src={`${API_BASE}${p.coverImage}`}
-                            alt={p.title}
-                          />
-                        ) : (
-                          <div className="rpt-blog-card__emoji">📰</div>
-                        )}
-                        {p.tags?.[0] && (
-                          <span className="rpt-blog-card__tag">
-                            {p.tags[0]}
-                          </span>
-                        )}
-                      </div>
-                      <div className="rpt-blog-card__body">
-                        <h2 className="rpt-blog-card__title">{p.title}</h2>
-                        <p className="rpt-blog-card__excerpt">{p.excerpt}</p>
-                        <div
+                      <div>
+                        <p className="rpt-label" style={{ marginBottom: 6 }}>
+                          All Articles
+                        </p>
+                        <h2
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginTop: "auto",
-                            paddingTop: 12,
+                            fontFamily: "var(--font-display)",
+                            fontSize: 28,
+                            fontWeight: 700,
+                            color: "var(--text-1)",
+                            margin: 0,
+                            letterSpacing: "-0.02em",
                           }}
                         >
-                          <span className="rpt-blog-card__date">
-                            <FiCalendar size={10} />
-                            {new Date(p.createdAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </span>
-                          <span className="rpt-blog-card__read">
-                            Read <FiChevronRight size={11} />
-                          </span>
-                        </div>
+                          Browse Everything
+                        </h2>
                       </div>
-                    </Link>
+                      <p
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          fontSize: 13,
+                          color: "var(--text-4)",
+                          margin: 0,
+                        }}
+                      >
+                        {posts.length} article{posts.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </Reveal>
+
+                <StaggerContainer className="rpt-blog-grid">
+                  {posts.map((p: BlogPost) => (
+                    <StaggerItem key={p._id}>
+                      <Link
+                        href={`/blog/${p.slug}`}
+                        className="rpt-blog-card"
+                      >
+                        <div className="rpt-blog-card__img">
+                          {p.coverImage ? (
+                            <img
+                              src={`${API_BASE}${p.coverImage}`}
+                              alt={p.title}
+                            />
+                          ) : (
+                            <div className="rpt-blog-card__emoji">📰</div>
+                          )}
+                          {p.tags?.[0] && (
+                            <span className="rpt-blog-card__tag">
+                              {p.tags[0]}
+                            </span>
+                          )}
+                        </div>
+                        <div className="rpt-blog-card__body">
+                          <h2 className="rpt-blog-card__title">{p.title}</h2>
+                          <p className="rpt-blog-card__excerpt">{p.excerpt}</p>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginTop: "auto",
+                              paddingTop: 12,
+                            }}
+                          >
+                            <span className="rpt-blog-card__date">
+                              <FiCalendar size={10} />
+                              {new Date(p.createdAt).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
+                            <span className="rpt-blog-card__read">
+                              Read <FiChevronRight size={11} />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
               </div>
             </section>
           </>

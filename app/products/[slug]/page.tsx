@@ -14,6 +14,8 @@ import {
   FiRefreshCw,
   FiPackage,
 } from "react-icons/fi";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -49,7 +51,9 @@ async function getRelatedProducts(
 
 async function getGlobalCms() {
   try {
-    const res = await fetch(`${API}/cms/global`, { next: { revalidate: 300 } });
+    const res = await fetch(`${API}/cms/global`, {
+      next: { revalidate: 300 },
+    });
     if (!res.ok) return {};
     const data = await res.json();
     return data.data || {};
@@ -73,10 +77,12 @@ function Stars({ rating, size = 16 }: { rating: number; size?: number }) {
 }
 
 const BADGE_CLASS: Record<string, string> = {
-  "Best Seller": "rpt-product-card__badge--red",
-  Popular: "rpt-product-card__badge--orange",
-  New: "rpt-product-card__badge--green",
-  "Top Rated": "rpt-product-card__badge--yellow",
+  "Best Seller": "rpt-pc__badge--red",
+  Popular: "rpt-pc__badge--orange",
+  New: "rpt-pc__badge--green",
+  "Top Rated": "rpt-pc__badge--yellow",
+  Sale: "rpt-pc__badge--orange",
+  Limited: "rpt-pc__badge--red",
 };
 
 export async function generateMetadata({
@@ -114,7 +120,7 @@ export default async function ProductDetailPage({
         {/* ── Breadcrumb ── */}
         <div className="rpt-product-detail-breadcrumb">
           <div className="rpt-container">
-            <div className="rpt-breadcrumb-inner">
+            <Reveal direction="down" className="rpt-breadcrumb-inner">
               <Link href="/" className="rpt-breadcrumb__link">
                 Home
               </Link>
@@ -131,7 +137,7 @@ export default async function ProductDetailPage({
               </Link>
               <span className="rpt-breadcrumb__sep">›</span>
               <span className="rpt-breadcrumb__current">{product.name}</span>
-            </div>
+            </Reveal>
           </div>
         </div>
 
@@ -140,17 +146,17 @@ export default async function ProductDetailPage({
           <div className="rpt-container">
             <div className="rpt-product-detail-grid">
               {/* Left — Gallery */}
-              <div className="rpt-product-detail__gallery">
+              <Reveal direction="right" className="rpt-product-detail__gallery">
                 <ProductImageGallery
                   images={product.images || []}
                   name={product.name}
                   badge={product.badge}
                   inStock={product.inStock}
                 />
-              </div>
+              </Reveal>
 
               {/* Right — Info */}
-              <div className="rpt-product-detail__info">
+              <Reveal direction="left" delay={0.2} className="rpt-product-detail__info">
                 {/* Category + Badge */}
                 <div className="rpt-product-detail__meta-row">
                   <Link
@@ -161,9 +167,9 @@ export default async function ProductDetailPage({
                   </Link>
                   {product.badge && (
                     <span
-                      className={`rpt-product-card__badge ${
+                      className={`rpt-pc__badge ${
                         BADGE_CLASS[product.badge] ||
-                        "rpt-product-card__badge--red"
+                        "rpt-pc__badge--red"
                       }`}
                       style={{ position: "static" }}
                     >
@@ -195,21 +201,58 @@ export default async function ProductDetailPage({
                 </p>
 
                 {/* Price */}
-                <div className="rpt-product-detail__price-block">
-                  <span className="rpt-product-detail__price">
-                    Rs {product.price.toLocaleString()}
-                  </span>
-                  {!product.inStock && (
-                    <span className="rpt-product-detail__oos-badge">
-                      Out of Stock
-                    </span>
-                  )}
-                  {product.inStock && (
-                    <span className="rpt-product-detail__stock-badge">
-                      In Stock
-                    </span>
-                  )}
-                </div>
+                {(() => {
+                  const hasDiscount =
+                    product.originalPrice &&
+                    product.originalPrice > product.price &&
+                    product.price > 0;
+                  const discountPct = hasDiscount
+                    ? Math.round(
+                        ((product.originalPrice! - product.price) /
+                          product.originalPrice!) *
+                          100,
+                      )
+                    : 0;
+                  return (
+                    <div className="rpt-product-detail__price-block">
+                      <div className="rpt-product-detail__price-row">
+                        <span className="rpt-product-detail__price">
+                          Rs {product.price.toLocaleString()}
+                        </span>
+                        {hasDiscount && (
+                          <span className="rpt-product-detail__discount-badge">
+                            -{discountPct}%
+                          </span>
+                        )}
+                      </div>
+                      {hasDiscount && (
+                        <div className="rpt-product-detail__price-orig-row">
+                          <span className="rpt-product-detail__price-original">
+                            Rs {product.originalPrice!.toLocaleString()}
+                          </span>
+                          <span className="rpt-product-detail__price-savings">
+                            You save Rs{" "}
+                            {(
+                              product.originalPrice! - product.price
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                        {!product.inStock && (
+                          <span className="rpt-product-detail__oos-badge">
+                            Out of Stock
+                          </span>
+                        )}
+                        {product.inStock && (
+                          <span className="rpt-product-detail__stock-badge">
+                            In Stock
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* CTA Buttons */}
                 <div className="rpt-product-detail__ctas">
@@ -253,7 +296,7 @@ export default async function ProductDetailPage({
                   ))}
                 </div>
 
-                {/* Product Meta */}
+                {/* Product Meta Table */}
                 <div className="rpt-product-detail__meta-table">
                   <div className="rpt-product-detail__meta-row-item">
                     <span className="rpt-product-detail__meta-key">
@@ -268,7 +311,11 @@ export default async function ProductDetailPage({
                       Availability
                     </span>
                     <span
-                      className={`rpt-product-detail__meta-val ${product.inStock ? "rpt-product-detail__meta-val--green" : "rpt-product-detail__meta-val--red"}`}
+                      className={`rpt-product-detail__meta-val ${
+                        product.inStock
+                          ? "rpt-product-detail__meta-val--green"
+                          : "rpt-product-detail__meta-val--red"
+                      }`}
                     >
                       {product.inStock ? "In Stock" : "Out of Stock"}
                     </span>
@@ -290,7 +337,7 @@ export default async function ProductDetailPage({
                     </span>
                   </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -301,21 +348,21 @@ export default async function ProductDetailPage({
             className="rpt-section"
             style={{ paddingTop: 80, paddingBottom: 80 }}
           >
-            <div className="rpt-container">
-              <div className="rpt-section-head">
-                <div>
-                  <p className="rpt-label">More Like This</p>
-                  <h2 className="rpt-heading">Related Products</h2>
-                </div>
-                <Link
-                  href={`/products?category=${encodeURIComponent(product.category)}`}
-                  className="rpt-link-arrow rpt-link-arrow--desktop"
-                >
-                  View all in {product.category} →
-                </Link>
+          <Reveal direction="up" className="rpt-container">
+            <div className="rpt-section-head">
+              <div>
+                <p className="rpt-label">More Like This</p>
+                <h2 className="rpt-heading">Related Products</h2>
               </div>
-              <RelatedProducts products={related} />
+              <Link
+                href={`/products?category=${encodeURIComponent(product.category)}`}
+                className="rpt-link-arrow rpt-link-arrow--desktop"
+              >
+                View all in {product.category} →
+              </Link>
             </div>
+            <RelatedProducts products={related} />
+          </Reveal>
           </section>
         )}
       </div>

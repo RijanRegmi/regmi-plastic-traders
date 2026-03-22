@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu, FiX, FiShoppingBag, FiPhone } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
   storeName?: string;
@@ -97,7 +98,7 @@ export default function Header({
           {/* Logo icon — increased from 44px to 56px */}
           <div
             className="rpt-logo__icon"
-            style={{ width: "56px", height: "56px", fontSize: "24px" }}
+            style={{ width: "56px", height: "56px", fontSize: "24px", flexShrink: 0 }}
           >
             {logoUrl ? (
               <img
@@ -114,8 +115,8 @@ export default function Header({
               logoLetter
             )}
           </div>
-          <div>
-            <div className="rpt-logo__name" style={{ fontSize: "16px" }}>
+          <div style={{ minWidth: 0 }}>
+            <div className="rpt-logo__name" style={{ fontSize: "16px", lineHeight: "1.2" }}>
               {storeName}
             </div>
             <div className="rpt-logo__sub">Est. {estYear} · Nepal</div>
@@ -130,6 +131,14 @@ export default function Header({
               className={`rpt-nav__link ${pathname === link.href ? "rpt-nav__link--active" : ""}`}
             >
               {link.label}
+              {pathname === link.href && (
+                <motion.div
+                  layoutId="nav-underline"
+                  className="rpt-nav__underline"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
             </Link>
           ))}
         </nav>
@@ -158,27 +167,35 @@ export default function Header({
         </button>
       </div>
 
-      {mobileOpen && (
-        <div className="rpt-mobile-menu">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className={`rpt-mobile-menu__link ${pathname === link.href ? "rpt-mobile-menu__link--active" : ""}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            href="/products"
-            onClick={() => setMobileOpen(false)}
-            className="rpt-mobile-menu__cta"
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="rpt-mobile-menu"
           >
-            <FiShoppingBag size={14} /> {ctaText}
-          </Link>
-        </div>
-      )}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`rpt-mobile-menu__link ${pathname === link.href ? "rpt-mobile-menu__link--active" : ""}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href="/products"
+              onClick={() => setMobileOpen(false)}
+              className="rpt-mobile-menu__cta"
+            >
+              <FiShoppingBag size={14} /> {ctaText}
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

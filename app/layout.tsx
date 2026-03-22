@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
+import BaseLayout from "@/components/layout/BaseLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export default function RootLayout({
             },
           }}
         />
-        {children}
+        <BaseLayout>{children}</BaseLayout>
       </body>
     </html>
   );

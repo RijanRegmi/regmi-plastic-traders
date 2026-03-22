@@ -41,6 +41,7 @@ export const productApi = {
   getCategories:() => api.get('/products/categories').then((r) => r.data.data),
   getBySlug:    (slug: string) => api.get(`/products/${slug}`).then((r) => r.data.data),
   adminGetAll:  (params?: Record<string, unknown>) => api.get('/admin/products', { params }).then((r) => r.data),
+  adminGetById: (id: string) => api.get(`/admin/products/${id}`).then((r) => r.data.data),
   create:       (data: Record<string, unknown>) => api.post('/admin/products', data).then((r) => r.data),
   update:       (id: string, data: Record<string, unknown>) => api.put(`/admin/products/${id}`, data).then((r) => r.data),
   delete:       (id: string) => api.delete(`/admin/products/${id}`).then((r) => r.data),
@@ -72,7 +73,7 @@ export const uploadApi = {
   uploadImages:    (formData: FormData) => api.post('/admin/upload', formData).then((r) => r.data),
   uploadSingle:    (formData: FormData) => api.post('/admin/upload/single', formData).then((r) => r.data),
   uploadLogo:      (formData: FormData) => api.post('/admin/upload/logo', formData).then((r) => r.data),
-  uploadBackground:(formData: FormData) => api.post('/admin/upload/background', formData).then((r) => r.data),
+  uploadBackground:(page: string, formData: FormData) => api.post(`/admin/upload/background/${page}`, formData).then((r) => r.data),
   listImages:      () => api.get('/admin/upload').then((r) => r.data),
   deleteImage:     (filename: string) => api.delete(`/admin/upload/${filename}`).then((r) => r.data),
 };

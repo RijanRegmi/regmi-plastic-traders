@@ -7,14 +7,19 @@ import {
   FiPackage,
   FiArrowRight,
 } from "react-icons/fi";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
+const API_BASE = API.replace(/\/api$/, "");
+
+export const dynamic = "force-dynamic";
 
 async function getData() {
   try {
     const [aboutRes, globalRes] = await Promise.allSettled([
-      fetch(`${API}/cms/about`, { next: { revalidate: 60 } }),
-      fetch(`${API}/cms/global`, { next: { revalidate: 60 } }),
+      fetch(`${API}/cms/about`, { cache: 'no-store' }),
+      fetch(`${API}/cms/global`, { cache: 'no-store' }),
     ]);
     return {
       about:
@@ -31,11 +36,24 @@ async function getData() {
   }
 }
 
+function unwrap(v: unknown, fallback = ""): string {
+  if (v && typeof v === "object" && !Array.isArray(v)) {
+    const o = v as Record<string, unknown>;
+    if ("value" in o) return String(o.value ?? "") || fallback;
+  }
+  return typeof v === "string" && v ? v : fallback;
+}
+
 export default async function AboutPage() {
   const { about, cms } = await getData();
-  const title = (about.title as string) || "About Regmi Plastic Traders";
-  const content = (about.content as string) || "";
-  const storeName = (cms.storeName as string) || "Regmi Plastic Traders";
+  const title = unwrap(about.heroTitle, "About Regmi Plastic Traders");
+  const content = (about.content as string) || unwrap(about.storyContent, "");
+  const storeName = unwrap(cms.storeName, "Regmi Plastic Traders");
+  const heroLabel = unwrap(about.heroLabel, "Who We Are");
+  const heroSubtitle = unwrap(about.heroSubtitle, "Your trusted partner since 2005");
+
+  const aboutBgPath = unwrap(about.aboutBgImage, "");
+  const aboutBgUrl = aboutBgPath ? `${API_BASE}${aboutBgPath}` : "";
 
   const VALUES = [
     {
@@ -72,12 +90,19 @@ export default async function AboutPage() {
 
       {/* Page Hero */}
       <div className="rpt-page-hero">
-        <div className="rpt-page-hero__bg" />
-        <div className="rpt-page-hero__content">
-          <p className="rpt-label">Who We Are</p>
-          <h1 className="rpt-page-hero__title">{title}</h1>
-          <p className="rpt-page-hero__sub">Your trusted partner since 2005</p>
+        <div className="rpt-page-hero__bg">
+          {aboutBgUrl && (
+            <div
+              className="rpt-page-hero__bg-img"
+              style={{ backgroundImage: `url(${aboutBgUrl})` }}
+            />
+          )}
         </div>
+        <Reveal direction="up" className="rpt-page-hero__content">
+          <p className="rpt-label">{heroLabel}</p>
+          <h1 className="rpt-page-hero__title">{title}</h1>
+          <p className="rpt-page-hero__sub">{heroSubtitle}</p>
+        </Reveal>
       </div>
 
       <main className="rpt-page-body">
@@ -86,7 +111,7 @@ export default async function AboutPage() {
           className="rpt-section"
           style={{ paddingTop: "80px", paddingBottom: "80px" }}
         >
-          <div className="rpt-container">
+          <Reveal direction="up" className="rpt-container">
             <div className="rpt-about-text">
               {content ? (
                 <div
@@ -102,7 +127,7 @@ export default async function AboutPage() {
                 </p>
               )}
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* Value cards */}
@@ -111,23 +136,23 @@ export default async function AboutPage() {
           style={{ paddingTop: "80px", paddingBottom: "80px" }}
         >
           <div className="rpt-container">
-            <div className="rpt-section-head rpt-section-head--center">
+            <Reveal direction="up" className="rpt-section-head rpt-section-head--center">
               <p className="rpt-label">What We Stand For</p>
               <h2 className="rpt-heading">
                 Our <span className="rpt-heading--yellow">Core Values</span>
               </h2>
-            </div>
-            <div className="rpt-3col-grid">
+            </Reveal>
+            <StaggerContainer className="rpt-3col-grid">
               {VALUES.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="rpt-value-card">
+                <StaggerItem key={title} className="rpt-value-card">
                   <div className="rpt-value-card__icon">
                     <Icon size={22} />
                   </div>
                   <h3 className="rpt-value-card__title">{title}</h3>
                   <p className="rpt-value-card__desc">{desc}</p>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </section>
 
@@ -138,7 +163,7 @@ export default async function AboutPage() {
         >
           <div className="rpt-container">
             <div className="rpt-why-us">
-              <div>
+              <Reveal direction="right" delay={0.2}>
                 <p className="rpt-label">Why Choose Us</p>
                 <h2 className="rpt-heading">
                   Built on <span className="rpt-heading--yellow">Trust</span>
@@ -157,8 +182,8 @@ export default async function AboutPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="rpt-why-us__card">
+              </Reveal>
+              <Reveal direction="left" delay={0.3} className="rpt-why-us__card">
                 <div className="rpt-why-us__emoji">🏆</div>
                 <div className="rpt-why-us__stat">19+</div>
                 <div className="rpt-why-us__stat-label">
@@ -170,7 +195,7 @@ export default async function AboutPage() {
                 <div className="rpt-why-us__divider" />
                 <div className="rpt-why-us__stat">500+</div>
                 <div className="rpt-why-us__stat-label">Products Available</div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>

@@ -9,6 +9,8 @@ import {
   FiTag,
   FiChevronRight,
 } from "react-icons/fi";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
@@ -104,10 +106,7 @@ export default async function BlogPostPage({
         {/* Default bg (only shows when no cover image) */}
         {!post.coverImage && <div className="rpt-page-hero__bg" />}
 
-        <div
-          className="rpt-post-hero__content"
-          style={{ position: "relative", zIndex: 2 }}
-        >
+        <Reveal direction="up" className="rpt-post-hero__content" style={{ position: "relative", zIndex: 2 }}>
           <Link href="/blog" className="rpt-back-link">
             <FiArrowLeft size={14} /> Back to Blog
           </Link>
@@ -134,11 +133,11 @@ export default async function BlogPostPage({
               <FiUser size={13} /> {post.author}
             </span>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       <main className="rpt-page-body">
-        <div className="rpt-post-body">
+        <Reveal direction="up" className="rpt-post-body">
           {/* Excerpt */}
           <p className="rpt-post-excerpt">{post.excerpt}</p>
 
@@ -202,7 +201,7 @@ export default async function BlogPostPage({
           >
             <FiArrowLeft size={14} /> All Blog Posts
           </Link>
-        </div>
+        </Reveal>
 
         {/* Related */}
         {related.length > 0 && (
@@ -216,7 +215,7 @@ export default async function BlogPostPage({
                   More <span className="rpt-heading--yellow">Articles</span>
                 </h2>
               </div>
-              <div className="rpt-3col-grid">
+              <StaggerContainer className="rpt-3col-grid">
                 {related.map(
                   (p: {
                     _id: string;
@@ -227,46 +226,47 @@ export default async function BlogPostPage({
                     createdAt: string;
                     coverImage?: string;
                   }) => (
-                    <Link
-                      key={p._id}
-                      href={`/blog/${p.slug}`}
-                      className="rpt-blog-card"
-                    >
-                      <div className="rpt-blog-card__img">
-                        {p.coverImage ? (
-                          <img
-                            src={`${API_BASE}${p.coverImage}`}
-                            alt={p.title}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              display: "block",
-                            }}
-                          />
-                        ) : (
-                          <div className="rpt-blog-card__emoji">📰</div>
-                        )}
-                      </div>
-                      <div className="rpt-blog-card__body">
-                        <div className="rpt-blog-card__date">
-                          <FiCalendar size={11} />
-                          {new Date(p.createdAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                    <StaggerItem key={p._id}>
+                      <Link
+                        href={`/blog/${p.slug}`}
+                        className="rpt-blog-card"
+                      >
+                        <div className="rpt-blog-card__img">
+                          {p.coverImage ? (
+                            <img
+                              src={`${API_BASE}${p.coverImage}`}
+                              alt={p.title}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                display: "block",
+                              }}
+                            />
+                          ) : (
+                            <div className="rpt-blog-card__emoji">📰</div>
+                          )}
                         </div>
-                        <h3 className="rpt-blog-card__title">{p.title}</h3>
-                        <p className="rpt-blog-card__excerpt">{p.excerpt}</p>
-                        <span className="rpt-blog-card__read">
-                          Read More <FiChevronRight size={12} />
-                        </span>
-                      </div>
-                    </Link>
+                        <div className="rpt-blog-card__body">
+                          <div className="rpt-blog-card__date">
+                            <FiCalendar size={11} />
+                            {new Date(p.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </div>
+                          <h3 className="rpt-blog-card__title">{p.title}</h3>
+                          <p className="rpt-blog-card__excerpt">{p.excerpt}</p>
+                          <span className="rpt-blog-card__read">
+                            Read More <FiChevronRight size={12} />
+                          </span>
+                        </div>
+                      </Link>
+                    </StaggerItem>
                   ),
                 )}
-              </div>
+              </StaggerContainer>
             </div>
           </section>
         )}

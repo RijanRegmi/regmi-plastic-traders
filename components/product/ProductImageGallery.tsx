@@ -10,12 +10,12 @@ interface Props {
 }
 
 const BADGE_CLASS: Record<string, string> = {
-  "Best Seller": "rpt-product-card__badge--red",
-  Popular: "rpt-product-card__badge--orange",
-  New: "rpt-product-card__badge--green",
-  "Top Rated": "rpt-product-card__badge--yellow",
-  Sale: "rpt-product-card__badge--orange",
-  Limited: "rpt-product-card__badge--red",
+  "Best Seller": "rpt-pc__badge--red",
+  Popular: "rpt-pc__badge--orange",
+  New: "rpt-pc__badge--green",
+  "Top Rated": "rpt-pc__badge--yellow",
+  Sale: "rpt-pc__badge--orange",
+  Limited: "rpt-pc__badge--red",
 };
 
 export default function ProductImageGallery({
@@ -55,13 +55,12 @@ export default function ProductImageGallery({
             </div>
           )}
 
-          {/* Badge */}
           {badge && (
             <span
-              className={`rpt-product-card__badge ${
-                BADGE_CLASS[badge] || "rpt-product-card__badge--red"
+              className={`rpt-pc__badge ${
+                BADGE_CLASS[badge] || "rpt-pc__badge--red"
               }`}
-              style={{ top: 16, right: 16 }}
+              style={{ top: 16, right: 16, position: "absolute" }}
             >
               {badge}
             </span>

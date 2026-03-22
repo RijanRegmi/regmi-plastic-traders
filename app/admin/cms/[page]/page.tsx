@@ -18,6 +18,7 @@ import {
   FiUpload,
   FiX,
   FiImage,
+  FiFileText,
 } from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
 
@@ -53,9 +54,11 @@ interface PageDef {
 
 // ─── Hero Background Upload Field ─────────────────────────────────────────────
 function HeroBgUploadField({
+  activePage,
   currentPath,
   onUploaded,
 }: {
+  activePage: string;
   currentPath: string;
   onUploaded: (path: string) => void;
 }) {
@@ -81,7 +84,7 @@ function HeroBgUploadField({
     try {
       const fd = new FormData();
       fd.append("background", file);
-      const res = await uploadApi.uploadBackground(fd);
+      const res = await uploadApi.uploadBackground(activePage, fd);
       const path: string = res.data.path;
       setPreview(path);
       onUploaded(path);
@@ -1030,42 +1033,6 @@ const PAGES: Record<string, PageDef> = {
         ],
       },
       {
-        id: "blog-section",
-        title: "Blog Section",
-        icon: <FiSettings size={14} />,
-        description: "Section heading for the latest articles strip.",
-        fields: [
-          {
-            key: "blogSectionLabel",
-            label: "Section Label",
-            type: "text",
-            placeholder: "Latest Updates",
-            span: "half",
-          },
-          {
-            key: "blogSectionHeading",
-            label: "Section Heading",
-            type: "text",
-            placeholder: "From Our Blog",
-            span: "half",
-          },
-          {
-            key: "blogSectionSub",
-            label: "Subtitle",
-            type: "textarea",
-            placeholder: "Articles, guides and news from Regmi Plastic Traders",
-            span: "full",
-          },
-          {
-            key: "blogAllArticlesText",
-            label: "All Articles Link",
-            type: "text",
-            placeholder: "All Articles",
-            span: "half",
-          },
-        ],
-      },
-      {
         id: "cta",
         title: "CTA Strip (Bottom Banner)",
         icon: <FiSettings size={14} />,
@@ -1436,6 +1403,48 @@ const PAGES: Record<string, PageDef> = {
       },
     ],
   },
+  blog: {
+    title: "Blog Page",
+    icon: <FiFileText size={16} />,
+    sections: [
+      {
+        id: "hero",
+        title: "Page Hero",
+        icon: <FiLayout size={14} />,
+        description: "Top heading of the /blog page.",
+        fields: [
+          {
+            key: "blogSectionLabel",
+            label: "Small Label",
+            type: "text",
+            placeholder: "Latest Updates",
+            span: "half",
+          },
+          {
+            key: "blogSectionHeading",
+            label: "Page Heading",
+            type: "text",
+            placeholder: "From Our Blog",
+            span: "half",
+          },
+          {
+            key: "blogSectionSub",
+            label: "Subtitle",
+            type: "textarea",
+            placeholder: "Articles, guides and news from Regmi Plastic Traders",
+            span: "full",
+          },
+          {
+            key: "blogAllArticlesText",
+            label: "All Articles Link",
+            type: "text",
+            placeholder: "All Articles",
+            span: "half",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -1551,12 +1560,14 @@ function Section({
   onChange,
   onBgUploaded,
   onLogoUploaded,
+  activePage,
 }: {
   section: SectionDef;
   values: Record<string, string>;
   onChange: (k: string, v: string) => void;
   onBgUploaded?: (path: string) => void;
   onLogoUploaded?: (path: string) => void;
+  activePage: string;
 }) {
   const [open, setOpen] = useState(true);
   const filled = section.fields.filter((f) => values[f.key]?.trim()).length;
@@ -1657,11 +1668,19 @@ function Section({
           }}
         >
           {/* Hero section: background image uploader appears first */}
-          {section.id === "hero" && onBgUploaded && (
+          {["home", "about", "blog"].includes(activePage) && section.id === "hero" && onBgUploaded && (
             <HeroBgUploadField
-              currentPath={values["heroBgImage"] || ""}
+              activePage={activePage}
+              currentPath={
+                activePage === "about"
+                  ? values["aboutBgImage"] || ""
+                  : activePage === "blog"
+                  ? values["blogBgImage"] || ""
+                  : values["heroBgImage"] || ""
+              }
               onUploaded={(path) => {
-                onChange("heroBgImage", path);
+                const imgKey = activePage === "about" ? "aboutBgImage" : activePage === "blog" ? "blogBgImage" : "heroBgImage";
+                onChange(imgKey, path);
                 onBgUploaded(path);
               }}
             />
@@ -1766,6 +1785,10 @@ export default function CmsEditorPage() {
       const extraKeys =
         page === "home"
           ? ["heroBgImage"]
+          : page === "about"
+            ? ["aboutBgImage"]
+          : page === "blog"
+            ? ["blogBgImage"]
           : page === "global"
             ? ["logoUrl"]
             : [];
@@ -1811,6 +1834,20 @@ export default function CmsEditorPage() {
         updates["heroBgImage"] = {
           value: values["heroBgImage"] || "",
           label: "Hero Background Image",
+          type: "image",
+        };
+      }
+      if (activePage === "about" && values["aboutBgImage"] !== undefined) {
+        updates["aboutBgImage"] = {
+          value: values["aboutBgImage"] || "",
+          label: "About Hero Background",
+          type: "image",
+        };
+      }
+      if (activePage === "blog" && values["blogBgImage"] !== undefined) {
+        updates["blogBgImage"] = {
+          value: values["blogBgImage"] || "",
+          label: "Blog Hero Background",
           type: "image",
         };
       }
@@ -2087,9 +2124,13 @@ export default function CmsEditorPage() {
               section={section}
               values={values}
               onChange={handleChange}
+              activePage={activePage}
               onBgUploaded={
-                activePage === "home" && section.id === "hero"
-                  ? (path) => handleChange("heroBgImage", path)
+                (["home", "about", "blog"].includes(activePage)) && section.id === "hero"
+                  ? (path) => {
+                      const imgKey = activePage === "about" ? "aboutBgImage" : activePage === "blog" ? "blogBgImage" : "heroBgImage";
+                      handleChange(imgKey, path);
+                    }
                   : undefined
               }
               onLogoUploaded={

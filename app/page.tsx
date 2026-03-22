@@ -21,6 +21,8 @@ import {
   FiPhone,
 } from "react-icons/fi";
 import { Product, Review, StatItem } from "@/types";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
@@ -42,15 +44,18 @@ function arr<T>(raw: unknown, fallback: T[]): T[] {
   return Array.isArray(v) && v.length > 0 ? (v as T[]) : fallback;
 }
 
+export const dynamic = "force-dynamic";
+
 async function getHomeData() {
   try {
-    const [cmsRes, featuredRes, reviewsRes, globalRes, blogRes] =
+    const [cmsRes, featuredRes, reviewsRes, globalRes, blogRes, blogCmsRes] =
       await Promise.allSettled([
-        fetch(`${API}/cms/home`, { next: { revalidate: 30 } }),
+        fetch(`${API}/cms/home`, { cache: "no-store" }),
         fetch(`${API}/products/featured`, { cache: "no-store" }),
-        fetch(`${API}/reviews`, { next: { revalidate: 60 } }),
-        fetch(`${API}/cms/global`, { next: { revalidate: 60 } }),
-        fetch(`${API}/blog?limit=4`, { next: { revalidate: 60 } }),
+        fetch(`${API}/reviews`, { cache: "no-store" }),
+        fetch(`${API}/cms/global`, { cache: "no-store" }),
+        fetch(`${API}/blog?limit=4`, { cache: "no-store" }),
+        fetch(`${API}/cms/blog`, { cache: "no-store" }),
       ]);
 
     const homeCms =
@@ -60,6 +65,10 @@ async function getHomeData() {
     const globalCms =
       globalRes.status === "fulfilled"
         ? (await globalRes.value.json()).data || {}
+        : {};
+    const blogCms = 
+      blogCmsRes.status === "fulfilled"
+        ? (await blogCmsRes.value.json()).data || {}
         : {};
     const featured =
       featuredRes.status === "fulfilled"
@@ -74,7 +83,7 @@ async function getHomeData() {
         ? (await blogRes.value.json()).data || []
         : [];
 
-    const merged = { ...globalCms, ...homeCms } as Record<string, unknown>;
+    const merged = { ...globalCms, ...homeCms, ...blogCms } as Record<string, unknown>;
     const cms: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(merged)) cms[k] = unwrap(v);
 
@@ -248,52 +257,66 @@ export default async function HomePage() {
 
         <div className="rpt-hero__content">
           {/* Left */}
-          <div className="rpt-hero__left">
-            <div className="rpt-hero__badge">
-              <span className="rpt-hero__badge-dot" />
-              {heroBadge}
-            </div>
+          <StaggerContainer className="rpt-hero__left">
+            <StaggerItem>
+              <div className="rpt-hero__badge">
+                <span className="rpt-hero__badge-dot" />
+                {heroBadge}
+              </div>
+            </StaggerItem>
 
-            <h1 className="rpt-hero__title">
-              <span className="rpt-hero__title-white">{line1}</span>
-              <br />
-              <span className="rpt-hero__title-em">{line2}</span>
-            </h1>
+            <StaggerItem>
+              <h1 className="rpt-hero__title">
+                <span className="rpt-hero__title-white">{line1}</span>
+                <br />
+                <span className="rpt-hero__title-em">{line2}</span>
+              </h1>
+            </StaggerItem>
 
-            <p className="rpt-hero__sub">{heroSub}</p>
+            <StaggerItem>
+              <p className="rpt-hero__sub">{heroSub}</p>
+            </StaggerItem>
 
-            <div className="rpt-hero__rating">
-              <Stars rating={avgRating} size={16} />
-              <strong className="rpt-hero__rating-num">
-                {avgRating.toFixed(1)}
-              </strong>
-              <span className="rpt-hero__rating-label">
-                {reviewCount.toLocaleString()}+ {heroRatingLbl}
-              </span>
-            </div>
-
-            <div className="rpt-hero__ctas">
-              <Link href={heroBtnHref} className="rpt-btn-primary">
-                <FiShoppingBag size={16} />
-                {heroBtn}
-                <FiArrowRight size={15} className="rpt-btn-arrow" />
-              </Link>
-              <Link href={heroGhostHref} className="rpt-btn-ghost">
-                {heroGhost}
-              </Link>
-            </div>
-
-            <div className="rpt-hero__trust">
-              {[heroTrust1, heroTrust2, heroTrust3].filter(Boolean).map((t) => (
-                <span key={t} className="rpt-hero__trust-item">
-                  <FiCheck size={12} className="rpt-hero__trust-icon" /> {t}
+            <StaggerItem>
+              <div className="rpt-hero__rating">
+                <Stars rating={avgRating} size={16} />
+                <strong className="rpt-hero__rating-num">
+                  {avgRating.toFixed(1)}
+                </strong>
+                <span className="rpt-hero__rating-label">
+                  {reviewCount.toLocaleString()}+ {heroRatingLbl}
                 </span>
-              ))}
-            </div>
-          </div>
+              </div>
+            </StaggerItem>
+
+            <StaggerItem>
+              <div className="rpt-hero__ctas">
+                <Link href={heroBtnHref} className="rpt-btn-primary">
+                  <FiShoppingBag size={16} />
+                  {heroBtn}
+                  <FiArrowRight size={15} className="rpt-btn-arrow" />
+                </Link>
+                <Link href={heroGhostHref} className="rpt-btn-ghost">
+                  {heroGhost}
+                </Link>
+              </div>
+            </StaggerItem>
+
+            <StaggerItem>
+              <div className="rpt-hero__trust">
+                {[heroTrust1, heroTrust2, heroTrust3]
+                  .filter(Boolean)
+                  .map((t) => (
+                    <span key={t} className="rpt-hero__trust-item">
+                      <FiCheck size={12} className="rpt-hero__trust-icon" /> {t}
+                    </span>
+                  ))}
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
 
           {/* Right — stat cards */}
-          <div className="rpt-hero__right">
+          <Reveal direction="left" delay={0.4} className="rpt-hero__right">
             <div className="rpt-stats-grid">
               {statsItems.map((s, i) => {
                 const Icon = STAT_ICONS[i % STAT_ICONS.length];
@@ -311,7 +334,7 @@ export default async function HomePage() {
                 );
               })}
             </div>
-          </div>
+          </Reveal>
         </div>
 
         <div className="rpt-hero__scroll">
@@ -325,7 +348,7 @@ export default async function HomePage() {
         <section className="rpt-section rpt-section--alt">
           <div className="rpt-container">
             <div className="rpt-about">
-              <div className="rpt-about__left">
+              <Reveal direction="right" delay={0.2} className="rpt-about__left">
                 <p className="rpt-label">{aboutLabel}</p>
                 <h2 className="rpt-heading">
                   {aboutHeading}{" "}
@@ -347,9 +370,9 @@ export default async function HomePage() {
                 <Link href={aboutLearnHref} className="rpt-link-arrow">
                   {aboutLearnText} <FiChevronRight size={14} />
                 </Link>
-              </div>
+              </Reveal>
 
-              <div className="rpt-about__right">
+              <Reveal direction="left" delay={0.4} className="rpt-about__right">
                 {/* ── Card — rating badge now sits INSIDE the card flow ── */}
                 <div
                   className="rpt-about__card"
@@ -421,7 +444,7 @@ export default async function HomePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -430,7 +453,7 @@ export default async function HomePage() {
       {/* ══════════════════════ FEATURED PRODUCTS ══════════════════════ */}
       {featured.length > 0 && (
         <section className="rpt-section">
-          <div className="rpt-container">
+          <Reveal direction="up" className="rpt-container">
             <div className="rpt-section-head rpt-section-head--center">
               <p className="rpt-label">{prodLabel}</p>
               <h2 className="rpt-heading">
@@ -445,42 +468,44 @@ export default async function HomePage() {
                 {prodViewAll} <FiArrowRight size={14} />
               </Link>
             </div>
-          </div>
+          </Reveal>
         </section>
       )}
 
       {/* ══════════════════════ REVIEWS ══════════════════════ */}
       <section className="rpt-section rpt-section--alt">
-        <div className="rpt-container">
-          <div className="rpt-reviews-head">
-            <div>
-              <p className="rpt-label">{revLabel}</p>
-              <h2 className="rpt-heading">
-                {revHeading}{" "}
-                <span className="rpt-heading--yellow">Thousands</span>
-              </h2>
-            </div>
-            <div className="rpt-rating-badge">
-              <div className="rpt-rating-badge__num">
-                {avgRating.toFixed(1)}
+          <div className="rpt-container">
+            <Reveal direction="right" delay={0.2} className="rpt-reviews-head">
+              <div>
+                <p className="rpt-label">{revLabel}</p>
+                <h2 className="rpt-heading">
+                  {revHeading}{" "}
+                  <span className="rpt-heading--yellow">Thousands</span>
+                </h2>
               </div>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-              >
-                <Stars rating={avgRating} size={17} />
-                <div className="rpt-rating-badge__sub">{revSubLabel}</div>
+              <div className="rpt-rating-badge">
+                <div className="rpt-rating-badge__num">
+                  {avgRating.toFixed(1)}
+                </div>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+                >
+                  <Stars rating={avgRating} size={17} />
+                  <div className="rpt-rating-badge__sub">{revSubLabel}</div>
+                </div>
               </div>
-            </div>
+            </Reveal>
+            <Reveal direction="left" delay={0.4}>
+              <HomeReviewsCarousel reviews={reviews} />
+            </Reveal>
           </div>
-          <HomeReviewsCarousel reviews={reviews} />
-        </div>
       </section>
 
       {/* ══════════════════════ BLOG ══════════════════════ */}
       {blogs.length > 0 && (
         <section className="rpt-section">
           <div className="rpt-container">
-            <div className="rpt-section-head">
+            <Reveal direction="right" delay={0.2} className="rpt-section-head">
               <div>
                 <p className="rpt-label">{blogLabel}</p>
                 <h2 className="rpt-heading">
@@ -495,26 +520,28 @@ export default async function HomePage() {
               >
                 {blogAllText} <FiChevronRight size={14} />
               </Link>
-            </div>
-            <HomeBlogCarousel blogs={blogs as BlogPost[]} />
+            </Reveal>
+            <Reveal direction="left" delay={0.4}>
+              <HomeBlogCarousel blogs={blogs as BlogPost[]} />
+            </Reveal>
           </div>
         </section>
       )}
 
       {/* ══════════════════════ CTA STRIP ══════════════════════ */}
       <section className="rpt-cta-strip">
-        <div className="rpt-cta-strip__inner">
-          <h2 className="rpt-cta-strip__title">{ctaTitle}</h2>
-          <p className="rpt-cta-strip__sub">{ctaSub}</p>
-          <div className="rpt-cta-strip__btns">
-            <Link href={ctaBtn1Href} className="rpt-cta-strip__btn-white">
-              <FiShoppingBag size={16} /> {ctaBtn1Text}
-            </Link>
-            <Link href={ctaBtn2Href} className="rpt-cta-strip__btn-outline">
-              <FiPhone size={16} /> {ctaBtn2Text}
-            </Link>
-          </div>
-        </div>
+          <Reveal direction="up" className="rpt-cta-strip__inner">
+            <h2 className="rpt-cta-strip__title">{ctaTitle}</h2>
+            <p className="rpt-cta-strip__sub">{ctaSub}</p>
+            <div className="rpt-cta-strip__btns">
+              <Link href={ctaBtn1Href} className="rpt-cta-strip__btn-white">
+                <FiShoppingBag size={16} /> {ctaBtn1Text}
+              </Link>
+              <Link href={ctaBtn2Href} className="rpt-cta-strip__btn-outline">
+                <FiPhone size={16} /> {ctaBtn2Text}
+              </Link>
+            </div>
+          </Reveal>
       </section>
 
       <Footer cms={cms} />

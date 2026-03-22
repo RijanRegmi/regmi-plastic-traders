@@ -3,6 +3,8 @@ import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/product/ProductCard";
 import ProductsFilter from "./ProductsFilter";
 import { Product } from "@/types";
+import Reveal from "@/components/ui/Reveal";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -73,10 +75,14 @@ export default async function ProductsPage({
 
       <main className="rpt-products-page">
         {/* ── Page header ── */}
-        <div className="rpt-products-page__head">
-          <h1 className="rpt-products-page__title">{pageTitle}</h1>
-          <p className="rpt-products-page__sub">{pageSubtitle}</p>
-        </div>
+        <Reveal direction="down" className="rpt-products-page__head" style={{ textAlign: "center", marginBottom: 40 }}>
+          <h1 className="rpt-products-page__title" style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 800, letterSpacing: "-0.02em" }}>
+            REGMI PLASTIC TRADERS
+          </h1>
+          <p className="rpt-products-page__sub" style={{ color: "#6b7280", marginTop: 8 }}>
+            Polished date / 2022 8 • Location, Nepal
+          </p>
+        </Reveal>
 
         <div className="rpt-products-page__body">
           {/* ── Filter ── */}
@@ -106,11 +112,16 @@ export default async function ProductsPage({
 
           {/* ── Grid ── */}
           {products.data?.length > 0 ? (
-            <div className="rpt-products-page__grid">
+            <StaggerContainer 
+              key={`${resolvedParams.category}-${resolvedParams.search}-${resolvedParams.page}`}
+              className="rpt-cards-grid"
+            >
               {products.data.map((p: Product) => (
-                <ProductCard key={p._id} product={p} />
+                <StaggerItem key={p._id}>
+                  <ProductCard product={p} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           ) : (
             <div className="rpt-empty-state">
               <div className="rpt-empty-state__emoji">🔍</div>

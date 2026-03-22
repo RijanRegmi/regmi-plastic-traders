@@ -4,6 +4,7 @@ export interface Product {
   slug: string;
   description: string;
   price: number;
+  originalPrice?: number;          // ← ADDED for discount display
   category: string;
   images: string[];
   darazLink: string;
