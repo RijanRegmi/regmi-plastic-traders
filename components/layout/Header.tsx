@@ -54,7 +54,7 @@ export default function Header({
       .then((json) => {
         if (json?.data) setCms(json.data);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [cmsProp]);
 
   useEffect(() => {
@@ -65,11 +65,11 @@ export default function Header({
   const isTransparent = mounted && isHome && !scrolled;
 
   const phone =
-    unwrap(cms?.headerPhone) || unwrap(cms?.phone) || "+977-9841234567";
+    unwrap(cms?.headerPhone) || unwrap(cms?.phone) || "+977-9851012554";
   const ctaText = unwrap(cms?.headerCTAText) || "Shop Now";
-  const logoLetter = unwrap(cms?.logoLetter) || storeName[0] || "R";
+  const logoLetter = unwrap(cms?.logoLetter) || storeName[0];
   const logoUrl = unwrap(cms?.logoUrl) || "";
-  const estYear = unwrap(cms?.establishedYear) || "2005";
+  const estYear = unwrap(cms?.establishedYear);
 
   const navLabels = {
     home: unwrap(cms?.navHome) || "Home",

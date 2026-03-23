@@ -2,13 +2,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { reviewApi } from "@/lib/api";
 import { Review } from "@/types";
-import { FiTrash2, FiStar, FiMessageSquare, FiUser } from "react-icons/fi";
+import { FiTrash2, FiStar, FiMessageSquare, FiUser, FiPlus, FiEdit2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { C, F } from "@/components/admin/adminUI";
+import { C, F, PrimaryBtn, GhostBtn, Input, Select, Field } from "@/components/admin/adminUI";
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<Partial<Review> & { _id?: string } | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -44,6 +48,41 @@ export default function AdminReviewsPage() {
       load();
     } catch {
       toast.error("Failed to update status");
+    }
+  };
+
+  const handleOpenForm = (r?: Review) => {
+    if (r) {
+      setEditingReview(r);
+    } else {
+      setEditingReview({ name: "", rating: 5, text: "", platform: "Google", isActive: true });
+    }
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingReview(null);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingReview || !editingReview.name || !editingReview.text) return;
+    setSaving(true);
+    try {
+      if (editingReview._id) {
+        await reviewApi.update(editingReview._id, editingReview);
+        toast.success("Review updated");
+      } else {
+        await reviewApi.create(editingReview);
+        toast.success("Review created");
+      }
+      handleCloseForm();
+      load();
+    } catch {
+      toast.error("Failed to save review");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -89,6 +128,9 @@ export default function AdminReviewsPage() {
             {reviews.length} total reviews across all platforms
           </p>
         </div>
+        <PrimaryBtn onClick={() => handleOpenForm()}>
+          <FiPlus size={14} /> New Review
+        </PrimaryBtn>
       </div>
 
       {/* Table */}
@@ -225,32 +267,62 @@ export default function AdminReviewsPage() {
                       </button>
                     </td>
                     <td style={{ padding: "13px 16px" }}>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(r._id, r.name)}
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 8,
-                          border: "none",
-                          background: "transparent",
-                          color: C.text4,
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(192,57,43,0.12)";
-                          e.currentTarget.style.color = "#f87171";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.color = C.text4;
-                        }}
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenForm(r)}
+                          title="Edit Review"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            border: "none",
+                            background: "transparent",
+                            color: C.text4,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = C.surface;
+                            e.currentTarget.style.color = C.text1;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = C.text4;
+                          }}
+                        >
+                          <FiEdit2 size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(r._id, r.name)}
+                          title="Delete Review"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            border: "none",
+                            background: "transparent",
+                            color: C.text4,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(192,57,43,0.12)";
+                            e.currentTarget.style.color = "#f87171";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = C.text4;
+                          }}
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -259,6 +331,116 @@ export default function AdminReviewsPage() {
           </div>
         )}
       </div>
+
+      {/* Form Modal */}
+      {isFormOpen && editingReview && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: C.bg2,
+              border: `1px solid ${C.border}`,
+              borderRadius: 20,
+              width: "100%",
+              maxWidth: 500,
+              padding: 30,
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2 style={{ fontFamily: F.display, fontSize: 24, margin: 0, color: C.text1 }}>
+                {editingReview._id ? "Edit Review" : "New Review"}
+              </h2>
+              <button
+                type="button"
+                onClick={handleCloseForm}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: C.text4,
+                  cursor: "pointer",
+                }}
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <Field label="Customer Name">
+                <Input
+                  value={editingReview.name || ""}
+                  onChange={(v) => setEditingReview({ ...editingReview, name: v })}
+                  required
+                />
+              </Field>
+
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ flex: 1 }}>
+                  <Field label="Rating (1-5)">
+                    <Input
+                      type="number"
+                      value={String(editingReview.rating || 5)}
+                      onChange={(v) =>
+                        setEditingReview({ ...editingReview, rating: Number(v) })
+                      }
+                      required
+                    />
+                  </Field>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Field label="Platform">
+                    <Select
+                      value={editingReview.platform || "Google"}
+                      onChange={(v) => setEditingReview({ ...editingReview, platform: v })}
+                      options={[
+                        { value: "Google", label: "Google" },
+                        { value: "Facebook", label: "Facebook" },
+                        { value: "Direct", label: "Direct/Website" },
+                      ]}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              <Field label="Review Content">
+                <Input
+                  rows={4}
+                  value={editingReview.text || ""}
+                  onChange={(v) => setEditingReview({ ...editingReview, text: v })}
+                  required
+                />
+              </Field>
+
+              <Field label="Avatar URL (Optional)">
+                <Input
+                  value={editingReview.avatar || ""}
+                  onChange={(v) => setEditingReview({ ...editingReview, avatar: v })}
+                  placeholder="https://..."
+                />
+              </Field>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 10 }}>
+                <GhostBtn onClick={handleCloseForm}>Cancel</GhostBtn>
+                <PrimaryBtn type="submit" disabled={saving}>
+                  {saving ? "Saving..." : "Save Review"}
+                </PrimaryBtn>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

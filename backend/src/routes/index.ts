@@ -4,7 +4,8 @@ import { productController }                       from '../controllers/product.
 import { cmsController }                           from '../controllers/cms.controller';
 import { blogController, reviewController }        from '../controllers/blog-review.controller';
 import { uploadController }                        from '../controllers/upload.controller';
-import { scraperController }                       from '../controllers/scraper.controller';   // ← NEW
+import { scraperController }                       from '../controllers/scraper.controller';
+import { messageController }                       from '../controllers/message.controller';
 import { protect, adminOnly }                      from '../middlewares/auth.middleware';
 import { upload, blogImageUpload, logoUpload, dynamicBgUpload } from '../middlewares/upload.middleware';
 
@@ -34,6 +35,9 @@ router.get('/blog/:slug', (req, res, next) => blogController.getBySlug(req, res,
 // ─── Public Reviews ────────────────────────────────────────────────────────────
 router.get('/reviews', (req, res, next) => reviewController.getActive(req, res, next));
 
+// ─── Public Messages ───────────────────────────────────────────────────────────
+router.post('/messages', (req, res, next) => messageController.createMessage(req, res, next));
+
 // ─── Admin (protected) ─────────────────────────────────────────────────────────
 router.use('/admin', protect, adminOnly);
 
@@ -59,6 +63,11 @@ router.get   ('/admin/reviews',     (req, res, next) => reviewController.adminGe
 router.post  ('/admin/reviews',     (req, res, next) => reviewController.create(req, res, next));
 router.put   ('/admin/reviews/:id', (req, res, next) => reviewController.update(req, res, next));
 router.delete('/admin/reviews/:id', (req, res, next) => reviewController.delete(req, res, next));
+
+// Admin Messages
+router.get   ('/admin/messages',     (req, res, next) => messageController.getMessages(req, res, next));
+router.put   ('/admin/messages/:id', (req, res, next) => messageController.updateMessageStatus(req, res, next));
+router.delete('/admin/messages/:id', (req, res, next) => messageController.deleteMessage(req, res, next));
 
 // Admin Image Uploads
 router.get   ('/admin/upload',          (req, res, next) => uploadController.listImages(req, res, next));

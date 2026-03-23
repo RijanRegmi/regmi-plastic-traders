@@ -80,7 +80,7 @@ export default async function ProductsPage({
             REGMI PLASTIC TRADERS
           </h1>
           <p className="rpt-products-page__sub" style={{ color: "#6b7280", marginTop: 8 }}>
-            Polished date / 2022 8 • Location, Nepal
+            Published date / 2026 • Kathmandu, Nepal
           </p>
         </Reveal>
 
@@ -112,7 +112,7 @@ export default async function ProductsPage({
 
           {/* ── Grid ── */}
           {products.data?.length > 0 ? (
-            <StaggerContainer 
+            <StaggerContainer
               key={`${resolvedParams.category}-${resolvedParams.search}-${resolvedParams.page}`}
               className="rpt-cards-grid"
             >
@@ -149,11 +149,10 @@ export default async function ProductsPage({
                   <a
                     key={pg}
                     href={`/products?${p.toString()}`}
-                    className={`rpt-page-btn${
-                      Number(resolvedParams.page || 1) === pg
-                        ? " rpt-page-btn--active"
-                        : ""
-                    }`}
+                    className={`rpt-page-btn${Number(resolvedParams.page || 1) === pg
+                      ? " rpt-page-btn--active"
+                      : ""
+                      }`}
                   >
                     {pg}
                   </a>

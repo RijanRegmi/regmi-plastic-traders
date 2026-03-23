@@ -69,6 +69,13 @@ export const authApi = {
   me:    () => api.get('/auth/me').then((r) => r.data),
 };
 
+export const messageApi = {
+  create:       (data: Record<string, unknown>) => api.post('/messages', data).then((r) => r.data),
+  adminGetAll:  (params?: Record<string, unknown>) => api.get('/admin/messages', { params }).then((r) => r.data),
+  updateStatus: (id: string, isRead: boolean) => api.put(`/admin/messages/${id}`, { isRead }).then((r) => r.data),
+  delete:       (id: string) => api.delete(`/admin/messages/${id}`).then((r) => r.data),
+};
+
 export const uploadApi = {
   uploadImages:    (formData: FormData) => api.post('/admin/upload', formData).then((r) => r.data),
   uploadSingle:    (formData: FormData) => api.post('/admin/upload/single', formData).then((r) => r.data),

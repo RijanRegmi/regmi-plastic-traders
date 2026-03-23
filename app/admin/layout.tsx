@@ -16,6 +16,7 @@ import {
   FiMessageSquare,
   FiExternalLink,
   FiChevronRight,
+  FiMail,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
 import toast from "react-hot-toast";
@@ -39,6 +40,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { href: "/admin/products", label: "Products", icon: FiPackage },
       { href: "/admin/reviews", label: "Reviews", icon: FiStar },
       { href: "/admin/blog", label: "Blog Posts", icon: FiMessageSquare },
+      { href: "/admin/messages", label: "Messages", icon: FiMail },
     ],
   },
   {
