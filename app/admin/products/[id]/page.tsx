@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { productApi } from "@/lib/api";
+import { productApi, uploadApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import {
   FiSave,
@@ -261,26 +261,23 @@ function ImageUploader({
     const fd = new FormData();
     fd.append("image", file);
     try {
-      const r = await fetch(`${API}/admin/upload/single`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: fd,
-      });
-      if (!r.ok) throw new Error();
-      const d = await r.json();
-      const url = d.data?.url || d.data?.path || "";
+      const res = await uploadApi.uploadSingle(fd);
+      if (!res.success) throw new Error(res.message);
+      
+      const url = res.data?.url || res.data?.path || "";
+      
       setItems((p) => {
         const n = [...p];
         n[idx] = { url, uploading: false };
         return n;
       });
-    } catch {
+    } catch (err: unknown) {
       setItems((p) => {
         const n = [...p];
         n[idx] = { ...n[idx], uploading: false, error: true };
         return n;
       });
-      toast.error("Upload failed");
+      toast.error((err as Error)?.message || "Upload failed");
     }
   };
 
@@ -1025,7 +1022,7 @@ function DarazFetcher({
       <p
         style={{ fontFamily: F.body, fontSize: 11, color: C.text4, margin: 0 }}
       >
-        This URL is saved to your database and used for the "Buy on Daraz"
+        This URL is saved to your database and used for the &quot;Buy on Daraz&quot;
         button.
       </p>
     </div>

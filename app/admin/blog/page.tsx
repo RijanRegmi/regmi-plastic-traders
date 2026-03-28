@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { blogApi } from "@/lib/api";
+import { blogApi, uploadApi } from "@/lib/api";
 import { BlogPost } from "@/types";
 import {
   FiPlus,
@@ -96,26 +96,18 @@ export default function AdminBlogPage() {
       const formData = new FormData();
       formData.append("coverImage", file);
 
-      const token =
-        localStorage.getItem("token") || sessionStorage.getItem("token") || "";
-      const API =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
-      const endpoint = editing
-        ? `${API}/admin/upload/blog/${editing._id}`
-        : `${API}/admin/upload/blog-temp`;
+      const res = editing
+        ? await uploadApi.uploadBlogImage(editing._id, formData)
+        : await uploadApi.uploadBlogImageTemp(formData);
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Upload failed");
+      if (!res.success) throw new Error(res.message || "Upload failed");
 
-      setForm((prev) => ({ ...prev, coverImage: data.data.path }));
+      // Use the full URL for consistency with other parts of the admin
+      const imageUrl = res.data.url || res.data.path;
+      setForm((prev) => ({ ...prev, coverImage: imageUrl }));
       toast.success("Image uploaded!");
-    } catch (err) {
-      toast.error("Image upload failed");
+    } catch (err: unknown) {
+      toast.error((err as Error)?.message || "Image upload failed");
       setImagePreview("");
     } finally {
       setImageUploading(false);

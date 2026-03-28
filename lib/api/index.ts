@@ -81,6 +81,8 @@ export const uploadApi = {
   uploadSingle:    (formData: FormData) => api.post('/admin/upload/single', formData).then((r) => r.data),
   uploadLogo:      (formData: FormData) => api.post('/admin/upload/logo', formData).then((r) => r.data),
   uploadBackground:(page: string, formData: FormData) => api.post(`/admin/upload/background/${page}`, formData).then((r) => r.data),
+  uploadBlogImage:   (id: string, formData: FormData) => api.post(`/admin/upload/blog/${id}`, formData).then((r) => r.data),
+  uploadBlogImageTemp: (formData: FormData) => api.post('/admin/upload/blog-temp', formData).then((r) => r.data),
   listImages:      () => api.get('/admin/upload').then((r) => r.data),
   deleteImage:     (filename: string) => api.delete(`/admin/upload/${filename}`).then((r) => r.data),
 };
