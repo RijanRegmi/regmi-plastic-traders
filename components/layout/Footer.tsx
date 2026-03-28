@@ -165,7 +165,7 @@ export default function Footer({ cms }: FooterProps) {
               >
                 {logoUrl ? (
                   <img
-                    src={`${API_BASE}${logoUrl}`}
+                    src={getImageUrl(logoUrl)}
                     alt={storeName}
                     style={{
                       width: "100%",

@@ -54,7 +54,7 @@ export default function BlogCarousel({ posts }: { posts: BlogPost[] }) {
               {/* Image */}
               <div className="rpt-blog-card__img">
                 {p.coverImage ? (
-                  <img src={`${API_BASE}${p.coverImage}`} alt={p.title} />
+                  <img src={getImageUrl(p.coverImage)} alt={p.title} />
                 ) : (
                   <div className="rpt-blog-card__emoji">📰</div>
                 )}

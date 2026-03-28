@@ -28,6 +28,7 @@ const EMPTY = {
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -73,7 +74,7 @@ export default function AdminBlogPage() {
       isPublished: p.isPublished,
       coverImage: p.coverImage || "",
     });
-    setImagePreview(p.coverImage ? `${API_BASE}${p.coverImage}` : "");
+    setImagePreview(getImageUrl(p.coverImage));
     setShowForm(true);
   };
 
@@ -819,7 +820,7 @@ export default function AdminBlogPage() {
                       >
                         {p.coverImage ? (
                           <img
-                            src={`${API_BASE}${p.coverImage}`}
+                            src={getImageUrl(p.coverImage)}
                             alt={p.title}
                             style={{
                               width: "100%",

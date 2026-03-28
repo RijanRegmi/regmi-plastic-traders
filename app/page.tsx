@@ -26,6 +26,7 @@ import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer"
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
 
 /** Unwrap CMS { value, label, type } wrapper objects */
 function unwrap(raw: unknown): unknown {
@@ -131,7 +132,7 @@ export default async function HomePage() {
 
   // ── Hero background ───────────────────────────────────────────────────────
   const heroBgPath = str(cms.heroBgImage, "");
-  const heroBgUrl = heroBgPath ? `${API_BASE}${heroBgPath}` : "";
+  const heroBgUrl = getImageUrl(heroBgPath);
 
   // ── Hero text ─────────────────────────────────────────────────────────────
   const heroBadge = str(cms.heroBadge, "Est. 2005 · Kathmandu, Nepal");

@@ -51,7 +51,7 @@ export default async function AboutPage() {
   const content = (about.content as string) || unwrap(about.storyContent, "");
 
   const aboutBgPath = unwrap(about.aboutBgImage, "");
-  const aboutBgUrl = aboutBgPath ? `${API_BASE}${aboutBgPath}` : "";
+  const aboutBgUrl = getImageUrl(aboutBgPath);
 
   // ── Stats — about CMS first, fallback to home CMS ────────────────────────
   const statsItems = [

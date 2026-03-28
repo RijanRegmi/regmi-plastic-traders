@@ -102,7 +102,7 @@ export default function Header({
           >
             {logoUrl ? (
               <img
-                src={`${API_BASE}${logoUrl}`}
+                src={getImageUrl(logoUrl)}
                 alt={storeName}
                 style={{
                   width: "100%",

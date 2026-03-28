@@ -53,7 +53,7 @@ export default async function BlogPage() {
   );
 
   const blogBgPath = unwrap(cms?.blogBgImage, "");
-  const blogBgUrl = blogBgPath ? `${API_BASE}${blogBgPath}` : "";
+  const blogBgUrl = getImageUrl(blogBgPath);
 
   return (
     <div className="rpt-page">
@@ -196,7 +196,7 @@ export default async function BlogPage() {
                         <div className="rpt-blog-card__img">
                           {p.coverImage ? (
                             <img
-                              src={`${API_BASE}${p.coverImage}`}
+                              src={getImageUrl(p.coverImage)}
                               alt={p.title}
                             />
                           ) : (

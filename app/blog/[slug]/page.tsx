@@ -78,7 +78,7 @@ export default async function BlogPostPage({
         {post.coverImage && (
           <>
             <img
-              src={`${API_BASE}${post.coverImage}`}
+              src={getImageUrl(post.coverImage)}
               alt={post.title}
               style={{
                 position: "absolute",
@@ -152,7 +152,7 @@ export default async function BlogPostPage({
               }}
             >
               <img
-                src={`${API_BASE}${post.coverImage}`}
+                src={getImageUrl(post.coverImage)}
                 alt={post.title}
                 style={{
                   width: "100%",
@@ -234,7 +234,7 @@ export default async function BlogPostPage({
                         <div className="rpt-blog-card__img">
                           {p.coverImage ? (
                             <img
-                              src={`${API_BASE}${p.coverImage}`}
+                              src={getImageUrl(p.coverImage)}
                               alt={p.title}
                               style={{
                                 width: "100%",

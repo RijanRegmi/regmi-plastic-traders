@@ -102,7 +102,7 @@ function HeroBgUploadField({
     onUploaded("");
   };
 
-  const previewUrl = preview ? `${API_BASE}${preview}` : "";
+  const previewUrl = getImageUrl(preview);
 
   return (
     <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -181,7 +181,7 @@ function LogoUploadField({ currentUrl, onUploaded }: { currentUrl: string; onUpl
         <div style={{ width: 72, height: 72, borderRadius: 14, border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0, position: "relative" }}>
           {preview ? (
             <>
-              <img src={`${API_BASE}${preview}`} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              <img src={getImageUrl(preview)} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               <button type="button" onClick={handleClear} style={{ position: "absolute", top: 3, right: 3, width: 18, height: 18, borderRadius: "50%", background: "rgba(192,57,43,0.9)", border: "none", color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
                 <FiX size={10} />
               </button>

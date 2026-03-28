@@ -111,7 +111,7 @@ export default function BlogCarousel({
                 <div className="rpt-blog-card__img">
                   {b.coverImage ? (
                     <img
-                      src={`${API_BASE}${b.coverImage}`}
+                      src={getImageUrl(b.coverImage)}
                       alt={b.title}
                       style={{
                         width: "100%",
