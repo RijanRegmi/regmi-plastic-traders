@@ -17,6 +17,7 @@ import {
   FiExternalLink,
   FiChevronRight,
   FiMail,
+  FiUsers,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
 import toast from "react-hot-toast";
@@ -32,7 +33,10 @@ interface NavItem {
 const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "Overview",
-    items: [{ href: "/admin", label: "Dashboard", icon: FiHome, exact: true }],
+    items: [
+      { href: "/admin", label: "Dashboard", icon: FiHome, exact: true },
+      { href: "/admin/users", label: "Users", icon: FiUsers },
+    ],
   },
   {
     label: "Catalogue",
@@ -89,14 +93,25 @@ export default function AdminLayout({
   const sidebarW = 234;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: C.bg2,
-        fontFamily: F.body,
-      }}
-    >
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="anonymous"
+      />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+        rel="stylesheet"
+      />
+      <div
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          background: C.bg2,
+          fontFamily: F.body,
+        }}
+      >
       {/* Mobile overlay */}
       {open && (
         <div
@@ -189,67 +204,75 @@ export default function AdminLayout({
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: "12px 10px", overflowY: "auto" }}>
-          {NAV_GROUPS.map((group) => (
-            <div key={group.label} style={{ marginBottom: 22 }}>
-              <div
-                style={{
-                  fontFamily: F.ui,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.2em",
-                  color: C.text4,
-                  padding: "0 10px",
-                  marginBottom: 5,
-                }}
-              >
-                {group.label}
+          {NAV_GROUPS.map((group) => {
+            const filteredItems = group.items.filter(item => {
+              if (item.href === "/admin/users" && user?.role !== "admin") return false;
+              return true;
+            });
+            if (filteredItems.length === 0) return null;
+            
+            return (
+              <div key={group.label} style={{ marginBottom: 22 }}>
+                <div
+                  style={{
+                    fontFamily: F.ui,
+                    fontSize: 9,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.2em",
+                    color: C.text4,
+                    padding: "0 10px",
+                    marginBottom: 5,
+                  }}
+                >
+                  {group.label}
+                </div>
+                {filteredItems.map(({ href, label, icon: Icon, exact }) => {
+                  const active = isActive(href, exact);
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        padding: "9px 12px",
+                        borderRadius: 10,
+                        marginBottom: 2,
+                        fontFamily: F.ui,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: active ? "white" : C.text3,
+                        textDecoration: "none",
+                        background: active ? C.red : "transparent",
+                        transition: "background 0.2s, color 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) {
+                          e.currentTarget.style.background = C.surface;
+                          e.currentTarget.style.color = C.text1;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.color = C.text3;
+                        }
+                      }}
+                    >
+                      <Icon size={15} style={{ flexShrink: 0 }} />
+                      <span style={{ flex: 1 }}>{label}</span>
+                      {active && (
+                        <FiChevronRight size={12} style={{ opacity: 0.5 }} />
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
-              {group.items.map(({ href, label, icon: Icon, exact }) => {
-                const active = isActive(href, exact);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "9px 12px",
-                      borderRadius: 10,
-                      marginBottom: 2,
-                      fontFamily: F.ui,
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: active ? "white" : C.text3,
-                      textDecoration: "none",
-                      background: active ? C.red : "transparent",
-                      transition: "background 0.2s, color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) {
-                        e.currentTarget.style.background = C.surface;
-                        e.currentTarget.style.color = C.text1;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active) {
-                        e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = C.text3;
-                      }
-                    }}
-                  >
-                    <Icon size={15} style={{ flexShrink: 0 }} />
-                    <span style={{ flex: 1 }}>{label}</span>
-                    {active && (
-                      <FiChevronRight size={12} style={{ opacity: 0.5 }} />
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+            );
+          })}
         </nav>
 
         {/* User footer */}
@@ -451,6 +474,7 @@ export default function AdminLayout({
           .admin-main-lg{ margin-left:0; }
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 }

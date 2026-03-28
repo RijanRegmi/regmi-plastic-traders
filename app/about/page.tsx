@@ -100,6 +100,11 @@ export default async function AboutPage() {
     unwrap(about.feature8, ""),
   ].filter(Boolean);
 
+  // ── Story section ─────────────────────────────────────────────────────────
+  const storyTitle = unwrap(about.storyTitle, "");
+  const mission = unwrap(about.mission, "");
+  const vision = unwrap(about.vision, "");
+
   // ── Why us text ───────────────────────────────────────────────────────────
   const whyUsLabel = unwrap(about.whyUsLabel, "Why Choose Us");
   const whyUsBody = unwrap(about.whyUsBody, `For over ${unwrap((about.stat3Value ?? home.stat3Value), "19")} years, we've been Nepal's go-to plastic products store. Here's what sets us apart.`);
@@ -131,6 +136,9 @@ export default async function AboutPage() {
         <section className="rpt-section" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
           <Reveal direction="up" className="rpt-container">
             <div className="rpt-about-text">
+              {storyTitle && (
+                <h2 className="rpt-heading" style={{ marginBottom: "24px" }}>{storyTitle}</h2>
+              )}
               {content ? (
                 <div className="rpt-prose" dangerouslySetInnerHTML={{ __html: content }} />
               ) : (
@@ -139,6 +147,18 @@ export default async function AboutPage() {
                   high-quality plastic household items, industrial containers, storage solutions,
                   and more. Our mission is to provide durable products at the most affordable prices.
                 </p>
+              )}
+              {mission && (
+                <div style={{ marginTop: "32px" }}>
+                  <h3 className="rpt-heading" style={{ fontSize: "1.15rem", marginBottom: "10px" }}>Our Mission</h3>
+                  <p className="rpt-prose-p">{mission}</p>
+                </div>
+              )}
+              {vision && (
+                <div style={{ marginTop: "24px" }}>
+                  <h3 className="rpt-heading" style={{ fontSize: "1.15rem", marginBottom: "10px" }}>Our Vision</h3>
+                  <p className="rpt-prose-p">{vision}</p>
+                </div>
               )}
             </div>
           </Reveal>

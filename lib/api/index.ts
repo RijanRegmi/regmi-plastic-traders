@@ -84,3 +84,12 @@ export const uploadApi = {
   listImages:      () => api.get('/admin/upload').then((r) => r.data),
   deleteImage:     (filename: string) => api.delete(`/admin/upload/${filename}`).then((r) => r.data),
 };
+
+export const userApi = {
+  getAll: () => api.get('/admin/users').then((r) => r.data),
+  create: (data: { name: string; email: string; password: string; role: string }) =>
+    api.post('/admin/users', data).then((r) => r.data),
+  update: (id: string, data: { name?: string; email?: string; password?: string; role?: string }) =>
+    api.patch(`/admin/users/${id}`, data).then((r) => r.data),
+  delete: (id: string) => api.delete(`/admin/users/${id}`).then((r) => r.data),
+};

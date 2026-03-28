@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef, ReactNode } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { cmsApi, uploadApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import {
@@ -19,6 +19,7 @@ import {
   FiX,
   FiImage,
   FiFileText,
+  FiUsers,
 } from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
 
@@ -140,7 +141,7 @@ function HeroBgUploadField({
       {preview && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 9, border: `1px solid ${C.border}` }}>
           <FiImage size={12} style={{ color: C.text4, flexShrink: 0 }} />
-          <code style={{ fontFamily: "monospace", fontSize: 11, color: C.text3, wordBreak: "break-all" as const }}>{preview}</code>
+          <code style={{ fontFamily: F.mono, fontSize: 11, color: C.text3, wordBreak: "break-all" as const }}>{preview}</code>
         </div>
       )}
     </div>
@@ -473,16 +474,6 @@ const PAGES: Record<string, PageDef> = {
           { key: "feature8", label: "Feature 8 (optional)", type: "text", placeholder: "", span: "half" },
         ],
       },
-      {
-        id: "team",
-        title: "Team Section",
-        icon: <FiSettings size={14} />,
-        description: "Team/founders section heading.",
-        fields: [
-          { key: "teamLabel", label: "Section Label", type: "text", placeholder: "Meet the Team", span: "half" },
-          { key: "teamHeading", label: "Section Heading", type: "text", placeholder: "The People Behind Regmi", span: "half" },
-        ],
-      },
     ],
   },
 
@@ -513,16 +504,6 @@ const PAGES: Record<string, PageDef> = {
           { key: "formMsgLabel", label: "Message Field Label", type: "text", placeholder: "Your Message", span: "half" },
           { key: "formButton", label: "Submit Button Text", type: "text", placeholder: "Send Message", span: "half" },
           { key: "formSuccessMsg", label: "Success Message", type: "text", placeholder: "Message sent! We'll reply soon.", span: "full" },
-        ],
-      },
-      {
-        id: "cta",
-        title: "Contact CTA Strip",
-        icon: <FiSettings size={14} />,
-        description: "The call-to-action banner on the contact page.",
-        fields: [
-          { key: "ctaTitle", label: "CTA Headline", type: "text", placeholder: "Ready to place an order?", span: "half" },
-          { key: "ctaSubtitle", label: "CTA Subtitle", type: "textarea", placeholder: "Call us or visit our store…", span: "full" },
         ],
       },
     ],
@@ -693,6 +674,7 @@ function Tab({ id, cfg, active, onClick }: { id: string; cfg: PageDef; active: b
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function CmsEditorPage() {
   const params = useParams();
+  const router = useRouter();
   const urlPage = (params?.page as string) || "global";
 
   const [activePage, setActivePage] = useState<string>(urlPage);
@@ -797,6 +779,20 @@ export default function CmsEditorPage() {
           {Object.entries(PAGES).map(([id, cfg]) => (
             <Tab key={id} id={id} cfg={cfg} active={activePage === id} onClick={() => switchPage(id)} />
           ))}
+          {JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}')?.state?.user?.role === 'admin' && (
+            <>
+              <div style={{ width: 1, height: 24, background: C.border, margin: "0 8px" }} />
+              <button
+                onClick={() => router.push("/admin/users")}
+                style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer", background: "transparent", color: C.text3, fontFamily: F.ui, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" as const }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = C.surface; e.currentTarget.style.color = C.text1; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.text3; }}
+              >
+                <FiUsers size={16} />
+                Users
+              </button>
+            </>
+          )}
         </div>
       </div>
 

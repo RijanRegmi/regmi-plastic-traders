@@ -53,6 +53,14 @@ async function getProductsData(searchParams: Record<string, string>) {
   }
 }
 
+function unwrap(v: unknown, fallback = ""): string {
+  if (v && typeof v === "object" && !Array.isArray(v)) {
+    const o = v as Record<string, unknown>;
+    if ("value" in o) return String(o.value ?? "") || fallback;
+  }
+  return typeof v === "string" && v ? v : fallback;
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -61,11 +69,14 @@ export default async function ProductsPage({
   const resolvedParams = await searchParams;
   const { products, categories, cms } = await getProductsData(resolvedParams);
 
-  const storeName = (cms.storeName as string) || "Regmi Plastic Traders";
-  const pageTitle = (cms.pageTitle as string) || storeName.toUpperCase();
-  const pageSubtitle =
-    (cms.pageSubtitle as string) ||
-    "Quality plastic products — click any item to buy on Daraz";
+  const storeName = unwrap(cms.storeName, "Regmi Plastic Traders");
+  const pageLabel = unwrap(cms.pageLabel, "Our Collection");
+  const pageTitle = unwrap(cms.pageTitle, "Our Products");
+  const pageSubtitle = unwrap(
+    cms.pageSubtitle,
+    "Quality plastic products — click any item to buy on Daraz"
+  );
+  const emptyStateText = unwrap(cms.emptyStateText, "No products found.");
   const totalProducts = products.pagination?.total || 0;
   const shownProducts = products.data?.length || 0;
 
@@ -76,11 +87,12 @@ export default async function ProductsPage({
       <main className="rpt-products-page">
         {/* ── Page header ── */}
         <Reveal direction="down" className="rpt-products-page__head" style={{ textAlign: "center", marginBottom: 40 }}>
+          <p className="rpt-label">{pageLabel}</p>
           <h1 className="rpt-products-page__title" style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 800, letterSpacing: "-0.02em" }}>
-            REGMI PLASTIC TRADERS
+            {pageTitle}
           </h1>
           <p className="rpt-products-page__sub" style={{ color: "#6b7280", marginTop: 8 }}>
-            Published date / 2026 • Kathmandu, Nepal
+            {pageSubtitle}
           </p>
         </Reveal>
 
@@ -125,7 +137,7 @@ export default async function ProductsPage({
           ) : (
             <div className="rpt-empty-state">
               <div className="rpt-empty-state__emoji">🔍</div>
-              <h3 className="rpt-empty-state__title">No products found</h3>
+              <h3 className="rpt-empty-state__title">{emptyStateText}</h3>
               <p className="rpt-empty-state__sub">
                 Try a different search or category
               </p>

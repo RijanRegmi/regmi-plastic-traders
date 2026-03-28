@@ -6,6 +6,7 @@ import { blogController, reviewController }        from '../controllers/blog-rev
 import { uploadController }                        from '../controllers/upload.controller';
 import { scraperController }                       from '../controllers/scraper.controller';
 import { messageController }                       from '../controllers/message.controller';
+import { userController }                          from '../controllers/user.controller';
 import { protect, adminOnly }                      from '../middlewares/auth.middleware';
 import { upload, blogImageUpload, logoUpload, dynamicBgUpload } from '../middlewares/upload.middleware';
 
@@ -39,7 +40,7 @@ router.get('/reviews', (req, res, next) => reviewController.getActive(req, res, 
 router.post('/messages', (req, res, next) => messageController.createMessage(req, res, next));
 
 // ─── Admin (protected) ─────────────────────────────────────────────────────────
-router.use('/admin', protect, adminOnly);
+router.use('/admin', protect);
 
 // Admin Products
 router.get   ('/admin/products',     (req, res, next) => productController.adminGetAll(req, res, next));
@@ -68,6 +69,12 @@ router.delete('/admin/reviews/:id', (req, res, next) => reviewController.delete(
 router.get   ('/admin/messages',     (req, res, next) => messageController.getMessages(req, res, next));
 router.put   ('/admin/messages/:id', (req, res, next) => messageController.updateMessageStatus(req, res, next));
 router.delete('/admin/messages/:id', (req, res, next) => messageController.deleteMessage(req, res, next));
+
+// Admin Users
+router.get   ('/admin/users',                    (req, res, next) => userController.getAll(req, res, next));
+router.post  ('/admin/users',     adminOnly,     (req, res, next) => userController.create(req, res, next));
+router.patch ('/admin/users/:id', adminOnly,     (req, res, next) => userController.update(req, res, next));
+router.delete('/admin/users/:id', adminOnly,     (req, res, next) => userController.delete(req, res, next));
 
 // Admin Image Uploads
 router.get   ('/admin/upload',          (req, res, next) => uploadController.listImages(req, res, next));

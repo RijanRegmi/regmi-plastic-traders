@@ -10,6 +10,7 @@ import {
   FiArrowRight,
   FiSettings,
   FiMessageSquare,
+  FiUsers,
 } from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
 
@@ -25,7 +26,7 @@ export default function AdminDashboardPage() {
     ]).then(([p, r, b]) => {
       setStats({
         products: p.status === "fulfilled" ? p.value.pagination?.total || 0 : 0,
-        reviews: r.status === "fulfilled" ? r.value.data?.length || 0 : 0,
+        reviews: r.status === "fulfilled" ? r.value?.length || 0 : 0,
         blogs: b.status === "fulfilled" ? b.value.data?.length || 0 : 0,
       });
       setLoading(false);
@@ -96,7 +97,13 @@ export default function AdminDashboardPage() {
       icon: FiStar,
       desc: "Customer reviews",
     },
-  ];
+    {
+      label: "Manage Users",
+      href: "/admin/users",
+      icon: FiUsers,
+      desc: "Admin accounts & access",
+    },
+  ].filter(q => q.href !== "/admin/users" || (typeof window !== 'undefined' && JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}')?.state?.user?.role === 'admin'));
 
   return (
     <div

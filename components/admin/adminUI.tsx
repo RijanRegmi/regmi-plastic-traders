@@ -24,9 +24,9 @@ export const C = {
 };
 
 export const F = {
-  display: "'Cormorant Garamond', Georgia, serif",
-  ui: "'Syne', 'DM Sans', sans-serif",
-  body: "'DM Sans', sans-serif",
+  display: "'Plus Jakarta Sans', sans-serif",
+  ui: "'Plus Jakarta Sans', sans-serif",
+  body: "'Plus Jakarta Sans', sans-serif",
   mono: "'JetBrains Mono', 'Fira Code', monospace",
 };
 

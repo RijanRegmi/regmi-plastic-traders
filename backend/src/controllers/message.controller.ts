@@ -21,7 +21,7 @@ export class MessageController {
         {},
         page,
         limit,
-        [['createdAt', 'desc']]
+        { createdAt: 'desc' }
       );
       
       res.json({ 
@@ -33,8 +33,8 @@ export class MessageController {
           pages: Math.ceil(total / limit)
         }
       });
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Server Error' });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -53,8 +53,8 @@ export class MessageController {
       }
 
       res.status(201).json({ success: true, data: message });
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Failed to create message' });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -65,8 +65,8 @@ export class MessageController {
         return res.status(404).json({ success: false, message: 'Message not found' });
       }
       res.json({ success: true, data: message });
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Server Error' });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -74,8 +74,8 @@ export class MessageController {
     try {
       await messageRepository.delete(req.params.id);
       res.json({ success: true, message: 'Message deleted' });
-    } catch (error) {
-      res.status(500).json({ success: false, message: 'Server Error' });
+    } catch (err) {
+      next(err);
     }
   }
 }

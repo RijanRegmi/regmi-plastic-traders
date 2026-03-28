@@ -1,4 +1,4 @@
-import { QueryFilter, UpdateQuery } from 'mongoose';
+import { QueryFilter, UpdateQuery, SortOrder } from 'mongoose';
 import { Message, IMessage } from '../models/Message.model';
 
 export class MessageRepository {
@@ -6,7 +6,7 @@ export class MessageRepository {
     filter: QueryFilter<IMessage> = {},
     page: number = 1,
     limit: number = 20,
-    sort: any = { createdAt: -1 }
+    sort: Record<string, SortOrder> = { createdAt: -1 }
   ) {
     const skip = (page - 1) * limit;
 

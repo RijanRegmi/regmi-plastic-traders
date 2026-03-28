@@ -127,7 +127,7 @@ export default async function HomePage() {
   // ── Global ───────────────────────────────────────────────────────────────
   const storeName = str(cms.storeName, "Regmi Plastic Traders");
   const avgRating = (stats.avgRating as number) || 4.8;
-  const reviewCount = (stats.count as number) || 2400;
+  const reviewCount = (stats.count as number) || 0;
 
   // ── Hero background ───────────────────────────────────────────────────────
   const heroBgPath = str(cms.heroBgImage, "");

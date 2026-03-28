@@ -11,6 +11,7 @@ import {
 import { cmsService } from '../services/cms.service';
 import { blogService } from '../services/blog-review.service';
 import { AppError } from '../errors/AppError';
+import { ICmsSection, IBlogPost } from '../types';
 
 export class UploadController {
   async uploadImages(req: Request, res: Response, next: NextFunction) {
@@ -63,7 +64,7 @@ export class UploadController {
       const { id } = req.params;
       const coverImagePath = `/uploads/blog/${file.filename}`;
 
-      const updatedPost = await blogService.update(id, { coverImage: coverImagePath } as any);
+      const updatedPost = await blogService.update(id, { coverImage: coverImagePath } as Partial<IBlogPost>);
 
       res.status(201).json({
         success: true,
@@ -128,7 +129,7 @@ export class UploadController {
       const bgPath = `/uploads/${dir}/${file.filename}`;
 
       // Immediately persist to DB so the home page SSR picks it up on next load
-      await cmsService.upsertSection(page as any, key, bgPath, `${page} Background Image`, 'image');
+      await cmsService.upsertSection(page as ICmsSection['page'], key, bgPath, `${page} Background Image`, 'image');
 
       res.status(201).json({
         success: true,
