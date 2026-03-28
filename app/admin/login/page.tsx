@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api";
@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { FiLock, FiMail, FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from") || "/admin";
@@ -344,5 +344,15 @@ export default function AdminLoginPage() {
 
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }} />
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
