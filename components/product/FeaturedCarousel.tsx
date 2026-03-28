@@ -42,16 +42,8 @@ export default function FeaturedCarousel({
     );
   }
 
-  if (products.length <= 4) {
-    return (
-      <div className="rpt-products-page__grid">
-        {products.map((p) => (
-          <ProductCard key={p._id} product={p} />
-        ))}
-      </div>
-    );
-  }
-
+  // Remove the `if (products.length <= 4)` bypass to ALWAYS show carousel if there are products
+  
   return (
     <div style={{ position: "relative" }}>
       <button
@@ -69,8 +61,11 @@ export default function FeaturedCarousel({
           display: "flex",
           gap: 18,
           overflowX: "auto",
+          overflowY: "hidden",
           scrollbarWidth: "none",
           paddingBottom: 4,
+          WebkitOverflowScrolling: "touch",
+          touchAction: "pan-y",
         }}
       >
         {products.map((p) => (

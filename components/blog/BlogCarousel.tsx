@@ -7,7 +7,12 @@ import { BlogPost } from "@/types";
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 export default function BlogCarousel({ posts }: { posts: BlogPost[] }) {
   const trackRef = useRef<HTMLDivElement>(null);

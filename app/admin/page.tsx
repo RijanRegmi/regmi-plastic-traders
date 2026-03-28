@@ -17,8 +17,10 @@ import { C, F } from "@/components/admin/adminUI";
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({ products: 0, reviews: 0, blogs: 0 });
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     Promise.allSettled([
       productApi.adminGetAll({ limit: 1 }),
       reviewApi.adminGetAll(),
@@ -103,7 +105,7 @@ export default function AdminDashboardPage() {
       icon: FiUsers,
       desc: "Admin accounts & access",
     },
-  ].filter(q => q.href !== "/admin/users" || (typeof window !== 'undefined' && JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}')?.state?.user?.role === 'admin'));
+  ].filter(q => q.href !== "/admin/users" || (mounted && JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}')?.state?.user?.role === 'admin'));
 
   return (
     <div

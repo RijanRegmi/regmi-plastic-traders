@@ -12,7 +12,12 @@ import CountUp from "@/components/ui/CountUp";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 export const dynamic = "force-dynamic";
 

@@ -12,7 +12,12 @@ import { Review } from "@/types";
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 const ANIM_MS = 380;
 const CARD_W = 300;
@@ -59,7 +64,7 @@ function Arrow({
         position: "absolute",
         top: "50%",
         transform: "translateY(-50%)",
-        [dir]: -20,
+        [dir]: 12,
         zIndex: 10,
         width: 42,
         height: 42,

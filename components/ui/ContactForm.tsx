@@ -4,7 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { messageApi } from "@/lib/api";
 
-export default function ContactForm({ cms }: { cms?: any }) {
+export default function ContactForm({ cms }: { cms?: unknown }) {
   const [formData, setFormData] = useState({ name: "", contact: "", message: "" });
   const [loading, setLoading] = useState(false);
 
@@ -19,8 +19,9 @@ export default function ContactForm({ cms }: { cms?: any }) {
       await messageApi.create(formData);
       toast.success("Message sent successfully! We will get back to you soon.");
       setFormData({ name: "", contact: "", message: "" });
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to send message. Please try again.");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error?.response?.data?.message || "Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }

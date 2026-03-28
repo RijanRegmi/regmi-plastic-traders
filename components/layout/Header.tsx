@@ -21,7 +21,12 @@ function unwrap(v: unknown): string {
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -32,38 +37,40 @@ export default function Header({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [cms, setCms] = useState<Record<string, unknown>>(cmsProp ?? {});
+  const [fetchedCms, setFetchedCms] = useState<Record<string, unknown> | null>(null);
+  // Derive the active CMS data from props first, falling back to fetched data
+  const cms = (cmsProp && Object.keys(cmsProp).length > 0) ? cmsProp : (fetchedCms ?? {});
 
   const isHome = pathname === "/";
 
   useEffect(() => {
-    setMounted(true);
     const handler = () => setScrolled(window.scrollY > 80);
-    handler();
+    
+    // Defer the initial check to avoid Next.js / React compiler warning
+    // about synchronous setState inside an effect body
+    const timeoutId = setTimeout(handler, 0);
+
     window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    return () => {
+      window.removeEventListener("scroll", handler);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
-    if (cmsProp && Object.keys(cmsProp).length > 0) {
-      setCms(cmsProp);
-      return;
+    // Only fetch client-side if the server did not provide the CMS data
+    if (!cmsProp || Object.keys(cmsProp).length === 0) {
+      fetch(`${API}/cms/global`, { cache: "no-store" })
+        .then((r) => r.json())
+        .then((json) => {
+          if (json?.data) setFetchedCms(json.data);
+        })
+        .catch(() => { });
     }
-    fetch(`${API}/cms/global`, { cache: "no-store" })
-      .then((r) => r.json())
-      .then((json) => {
-        if (json?.data) setCms(json.data);
-      })
-      .catch(() => { });
   }, [cmsProp]);
 
-  useEffect(() => {
-    if (cmsProp && Object.keys(cmsProp).length > 0) setCms(cmsProp);
-  }, [cmsProp]);
-
-  const isScrolled = mounted && scrolled;
-  const isTransparent = mounted && isHome && !scrolled;
+  const isScrolled = scrolled;
+  const isTransparent = isHome && !scrolled;
 
   const phone =
     unwrap(cms?.headerPhone) || unwrap(cms?.phone) || "+977-9851012554";

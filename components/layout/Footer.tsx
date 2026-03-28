@@ -24,7 +24,12 @@ function s(v: unknown, fallback = ""): string {
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 export default function Footer({ cms }: FooterProps) {
   const storeName = s(cms?.storeName, "Regmi Plastic Traders");
@@ -122,8 +127,8 @@ export default function Footer({ cms }: FooterProps) {
         }}
       >
         <style>{`
-          @media(max-width:768px){ .ft-grid{grid-template-columns:1fr!important} .ft-wrap{padding:48px 20px 32px!important} }
           @media(max-width:1024px){ .ft-grid{grid-template-columns:1fr 1fr!important} }
+          @media(max-width:768px){ .ft-grid{grid-template-columns:1fr!important; gap: 40px !important} .ft-wrap{padding:48px 20px 32px!important} }
           .ft-link{color:rgba(255,255,255,0.35);text-decoration:none;display:flex;align-items:center;gap:8px;font-size:14px;transition:color 0.2s}
           .ft-link:hover{color:rgba(255,255,255,0.75)}
           .ft-arrow{color:#c0392b;opacity:0;transform:translateX(-6px);transition:opacity 0.2s,transform 0.2s}

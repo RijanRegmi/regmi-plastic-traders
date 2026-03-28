@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useRef, ReactNode } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { cmsApi, uploadApi } from "@/lib/api";
 import toast from "react-hot-toast";
+import axios from "axios";
 import {
   FiSave,
   FiRefreshCw,
@@ -26,7 +27,22 @@ import { C, F } from "@/components/admin/adminUI";
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
+
+const getErrorMessage = (err: unknown): string => {
+  if (axios.isAxiosError(err)) {
+    return err.response?.data?.message || err.message;
+  }
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return String(err);
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type FieldType = "text" | "textarea" | "url" | "tel" | "email" | "number";
@@ -86,12 +102,13 @@ function HeroBgUploadField({
       const fd = new FormData();
       fd.append("background", file);
       const res = await uploadApi.uploadBackground(activePage, fd);
-      const path: string = res.data.path;
+      const path: string = res.data.url;
       setPreview(path);
       onUploaded(path);
       toast.success("Hero background updated!");
-    } catch {
-      toast.error("Upload failed");
+    } catch (err: unknown) {
+      console.error("Upload Error:", err);
+      toast.error(`Hero background update failed: ${getErrorMessage(err)}`);
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -165,11 +182,14 @@ function LogoUploadField({ currentUrl, onUploaded }: { currentUrl: string; onUpl
       const fd = new FormData();
       fd.append("logo", file);
       const res = await uploadApi.uploadLogo(fd);
-      const path: string = res.data.path;
+      const path: string = res.data.url;
       setPreview(path);
       onUploaded(path);
       toast.success("Logo uploaded!");
-    } catch { toast.error("Logo upload failed"); }
+    } catch (err: unknown) { 
+      console.error("Upload Error:", err);
+      toast.error(`Logo upload failed: ${getErrorMessage(err)}`); 
+    }
     finally { setUploading(false); if (inputRef.current) inputRef.current.value = ""; }
   };
 
@@ -683,6 +703,11 @@ export default function CmsEditorPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const pageConfig: PageDef = PAGES[activePage] || PAGES.global;
   const values = allData[activePage] || {};
@@ -700,8 +725,9 @@ export default function CmsEditorPage() {
       const mapped: Record<string, string> = {};
       [...declaredKeys, ...extraKeys].forEach((key) => { mapped[key] = unwrap(data[key]); });
       setAllData((prev) => ({ ...prev, [page]: mapped }));
-    } catch {
-      toast.error("Failed to load — is the backend running?");
+    } catch (err: unknown) {
+      console.error("Load Error:", err);
+      toast.error(`Failed to load: ${getErrorMessage(err)}`);
     } finally {
       setLoading(false);
     }
@@ -733,8 +759,9 @@ export default function CmsEditorPage() {
       await cmsApi.updatePage(activePage, updates);
       toast.success("✓ Saved! Changes are now live on your site.");
       setDirty(false);
-    } catch {
-      toast.error("Save failed. Check your backend connection.");
+    } catch (err: unknown) {
+      console.error("Save Error:", err);
+      toast.error(`Save failed: ${getErrorMessage(err)}`);
     } finally {
       setSaving(false);
     }
@@ -780,7 +807,16 @@ export default function CmsEditorPage() {
           {Object.entries(PAGES).map(([id, cfg]) => (
             <Tab key={id} id={id} cfg={cfg} active={activePage === id} onClick={() => switchPage(id)} />
           ))}
-          {JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}')?.state?.user?.role === 'admin' && (
+          {mounted && (() => {
+            try {
+              const auth = JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}') as {
+                state?: { user?: { role?: string } }
+              };
+              return auth?.state?.user?.role === 'admin';
+            } catch {
+              return false;
+            }
+          })() && (
             <>
               <div style={{ width: 1, height: 24, background: C.border, margin: "0 8px" }} />
               <button
