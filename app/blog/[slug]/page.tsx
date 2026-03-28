@@ -14,7 +14,7 @@ import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer"
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
-const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";
 
 async function getBlogPost(slug: string) {
   try {
