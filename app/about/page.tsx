@@ -12,6 +12,7 @@ import CountUp from "@/components/ui/CountUp";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
 
 export const dynamic = "force-dynamic";
 

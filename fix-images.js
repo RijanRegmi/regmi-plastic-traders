@@ -27,9 +27,9 @@ files.forEach(file => {
   let original = content;
 
   // Inject helper just after API_BASE definition
-  if (content.includes('API_BASE') && !content.includes('getImageUrl')) {
+  if (content.includes('API_BASE') && !content.includes('const getImageUrl =')) {
     content = content.replace(
-      /\}?\)?\.replace\(\/\\\\?\/api\\\\?\$\/, ""\);/m,
+      /(const API_BASE\s*=\s*[^;]+;)/,
       match => match + '\nconst getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : `${API_BASE}${path}`) : "";'
     );
   }

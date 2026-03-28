@@ -12,6 +12,7 @@ import { Review } from "@/types";
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
 
 const ANIM_MS = 380;
 const CARD_W = 300;

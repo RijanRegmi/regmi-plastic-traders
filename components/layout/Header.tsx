@@ -21,6 +21,7 @@ function unwrap(v: unknown): string {
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api"
 ).replace(/\/api$/, "");
+const getImageUrl = (path?: string) => path ? (path.startsWith("http") ? path : getImageUrl(path)) : "";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
