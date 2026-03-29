@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FeaturedCarousel from "@/components/product/FeaturedCarousel";
@@ -23,6 +24,7 @@ import {
 import { Product, Review, StatItem } from "@/types";
 import Reveal from "@/components/ui/Reveal";
 import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
+import { Typewriter } from "@/components/ui/Typewriter";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 const API_BASE = API.replace(/\/api$/, "");
@@ -250,9 +252,14 @@ export default async function HomePage() {
         <div className="rpt-hero__bg">
           <div className="rpt-hero__bg-base" />
           {heroBgUrl && (
-            <div
+            <Image
+              src={heroBgUrl}
+              alt="Hero Background"
+              fill
               className="rpt-hero__bg-img"
-              style={{ backgroundImage: `url(${heroBgUrl})` }}
+              style={{ objectFit: 'cover' }}
+              priority
+              quality={90}
             />
           )}
           <div className="rpt-hero__bg-glow1" />
@@ -273,9 +280,9 @@ export default async function HomePage() {
 
             <StaggerItem>
               <h1 className="rpt-hero__title">
-                <span className="rpt-hero__title-white">{line1}</span>
+                <Typewriter text={line1} className="rpt-hero__title-white" />
                 <br />
-                <span className="rpt-hero__title-em">{line2}</span>
+                <Typewriter text={line2} className="rpt-hero__title-em" delay={0.8} />
               </h1>
             </StaggerItem>
 
@@ -357,12 +364,14 @@ export default async function HomePage() {
               <Reveal direction="right" delay={0.2} className="rpt-about__left">
                 <p className="rpt-label">{aboutLabel}</p>
                 <h2 className="rpt-heading">
-                  {aboutHeading}{" "}
+                  <Typewriter text={aboutHeading} />{" "}
                   <span className="rpt-heading--yellow">
-                    {storeName.split(" ")[0]}
+                    <Typewriter text={storeName.split(" ")[0]} delay={0.5} />
                   </span>
                 </h2>
-                <p className="rpt-body">{aboutText}</p>
+                <p className="rpt-body">
+                  <Typewriter text={aboutText} charDelay={0.015} delay={1} />
+                </p>
                 <div className="rpt-about__mini-stats">
                   {statsItems.map((s, i) => (
                     <div key={i} className="rpt-mini-stat">
@@ -461,12 +470,18 @@ export default async function HomePage() {
         <section className="rpt-section">
           <Reveal direction="up" className="rpt-container">
             <div className="rpt-section-head rpt-section-head--center">
-              <p className="rpt-label">{prodLabel}</p>
+              <p className="rpt-label">
+                <Typewriter text={prodLabel} />
+              </p>
               <h2 className="rpt-heading">
-                {prodHeading}{" "}
-                <span className="rpt-heading--yellow">Products</span>
+                <Typewriter text={prodHeading} />{" "}
+                <span className="rpt-heading--yellow">
+                  <Typewriter text="Products" delay={0.6} />
+                </span>
               </h2>
-              <p className="rpt-body rpt-body--center">{prodSub}</p>
+              <p className="rpt-body rpt-body--center">
+                <Typewriter text={prodSub} charDelay={0.02} delay={1.2} />
+              </p>
             </div>
             <FeaturedCarousel products={featured} />
             <div className="rpt-section-footer">
@@ -483,10 +498,14 @@ export default async function HomePage() {
           <div className="rpt-container">
             <Reveal direction="right" delay={0.2} className="rpt-reviews-head">
               <div>
-                <p className="rpt-label">{revLabel}</p>
+                <p className="rpt-label">
+                  <Typewriter text={revLabel} />
+                </p>
                 <h2 className="rpt-heading">
-                  {revHeading}{" "}
-                  <span className="rpt-heading--yellow">Thousands</span>
+                  <Typewriter text={revHeading} />{" "}
+                  <span className="rpt-heading--yellow">
+                    <Typewriter text="Thousands" delay={0.6} />
+                  </span>
                 </h2>
               </div>
               <div className="rpt-rating-badge">
@@ -513,12 +532,18 @@ export default async function HomePage() {
           <div className="rpt-container">
             <Reveal direction="right" delay={0.2} className="rpt-section-head">
               <div>
-                <p className="rpt-label">{blogLabel}</p>
+                <p className="rpt-label">
+                  <Typewriter text={blogLabel} />
+                </p>
                 <h2 className="rpt-heading">
-                  {blogHeading}{" "}
-                  <span className="rpt-heading--yellow">Blog</span>
+                  <Typewriter text={blogHeading} />{" "}
+                  <span className="rpt-heading--yellow">
+                    <Typewriter text="Blog" delay={0.6} />
+                  </span>
                 </h2>
-                <p className="rpt-body">{blogSub}</p>
+                <p className="rpt-body">
+                  <Typewriter text={blogSub} delay={1.2} charDelay={0.02} />
+                </p>
               </div>
               <Link
                 href="/blog"
@@ -537,8 +562,12 @@ export default async function HomePage() {
       {/* ══════════════════════ CTA STRIP ══════════════════════ */}
       <section className="rpt-cta-strip">
           <Reveal direction="up" className="rpt-cta-strip__inner">
-            <h2 className="rpt-cta-strip__title">{ctaTitle}</h2>
-            <p className="rpt-cta-strip__sub">{ctaSub}</p>
+            <h2 className="rpt-cta-strip__title">
+              <Typewriter text={ctaTitle} />
+            </h2>
+            <p className="rpt-cta-strip__sub">
+              <Typewriter text={ctaSub} delay={0.8} charDelay={0.015} />
+            </p>
             <div className="rpt-cta-strip__btns">
               <Link href={ctaBtn1Href} className="rpt-cta-strip__btn-white">
                 <FiShoppingBag size={16} /> {ctaBtn1Text}

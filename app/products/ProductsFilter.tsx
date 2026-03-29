@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useTransition, useEffect } from "react";
-import { FiSearch, FiX } from "react-icons/fi";
+import { useState, useTransition, useEffect, useCallback } from "react";
+import { FiSearch } from "react-icons/fi";
 
 interface ProductsFilterProps {
   categories: string[];
@@ -18,15 +18,25 @@ export default function ProductsFilter({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState(currentSearch || "");
-
-  // Sync internal search state with URL parameter changes (e.g. from "All Categories" button)
   useEffect(() => {
     setSearch(currentSearch || "");
   }, [currentSearch]);
 
-  // Debounced real-time search
+  const updateParams = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(window.location.search);
+
+      Object.entries(updates).forEach(([k, v]) => {
+        if (v) params.set(k, v);
+        else params.delete(k);
+      });
+
+      startTransition(() => router.push(`${pathname}?${params.toString()}`));
+    },
+    [pathname, router]
+  );
+
   useEffect(() => {
-    // Only trigger if the search state is different from the current URL parameter
     if (search === (currentSearch || "")) return;
 
     const timer = setTimeout(() => {
@@ -34,18 +44,7 @@ export default function ProductsFilter({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [search, currentSearch]);
-
-  const updateParams = (updates: Record<string, string | undefined>) => {
-    const params = new URLSearchParams(window.location.search);
-    
-    Object.entries(updates).forEach(([k, v]) => {
-      if (v) params.set(k, v);
-      else params.delete(k);
-    });
-    
-    startTransition(() => router.push(`${pathname}?${params.toString()}`));
-  };
+  }, [search, currentSearch, updateParams]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,14 +52,20 @@ export default function ProductsFilter({
   };
 
   const handleAllClick = () => {
-    // Navigating back to "All" should clear both category and search
     setSearch("");
     startTransition(() => router.push(pathname));
   };
 
   return (
-    <div className="rpt-filter">
-      {/* ── Search bar — full width with button inside ── */}
+    <div
+      className="rpt-filter"
+      style={{
+        background: "transparent",
+        boxShadow: "none",
+        border: "none",
+      }}
+    >
+      {/* ── Search bar ── */}
       <form onSubmit={handleSearch} className="rpt-filter__search">
         <div className="rpt-filter__search-wrap">
           <FiSearch size={20} className="rpt-filter__search-icon" />

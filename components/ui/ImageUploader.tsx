@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import { api } from "@/lib/api";
+import Image from "next/image";
 import { FiUpload, FiX, FiImage, FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 
@@ -61,17 +62,16 @@ export default function ImageUploader({
       onChange([...images, ...newUrls]);
       toast.success(`${newUrls.length} image(s) uploaded!`);
     } catch (err: unknown) {
-      // ✅ Log full error so we can see exactly what went wrong
-      console.error("Full upload error:", err);
-      console.error("Error message:", (err as Error)?.message);
-      console.error("Error response:", (err as any)?.response);
-      console.error("Error code:", (err as any)?.code);
-
       const error = err as {
         response?: { status?: number; data?: { message?: string } };
         message?: string;
         code?: string;
       };
+      
+      console.error("Full upload error:", err);
+      console.error("Error message:", error?.message);
+      console.error("Error response:", error?.response);
+      console.error("Error code:", error?.code);
 
       if (error?.code === "ERR_NETWORK" || !error?.response) {
         toast.error(
@@ -94,12 +94,36 @@ export default function ImageUploader({
   };
 
   const removeImage = async (url: string, index: number) => {
-    const filename = url.split("/uploads/")[1];
     try {
-      if (filename) await api.delete(`/admin/upload/${filename}`);
-    } catch {
-      // If file not found on server, still remove from UI
+      let imageId = "";
+
+      // 1. Handle Cloudinary deletion (Manual uploads)
+      if (url.includes("cloudinary.com")) {
+        // Extract public_id: EVERYTHING after /upload/vXXXX/ (skipping the version part)
+        const parts = url.split("/upload/");
+        if (parts.length > 1) {
+          const pathSegments = parts[1].split("/");
+          // Find segments starting after the "vXXXX" part
+          const startIndex = pathSegments[0].startsWith("v") ? 1 : 0;
+          const pathWithExtension = pathSegments.slice(startIndex).join("/");
+          // Strip extension
+          imageId = pathWithExtension.substring(0, pathWithExtension.lastIndexOf("."));
+        }
+      }
+      // 2. Handle legacy local deletion
+      else if (url.includes("/uploads/")) {
+        imageId = url.split("/uploads/")[1];
+      }
+
+      if (imageId) {
+        // Using encodeURIComponent because Cloudinary public_ids contain slashes
+        await api.delete(`/admin/upload/${encodeURIComponent(imageId)}`);
+      }
+    } catch (err) {
+      console.warn("Image was not removed from server (it may be a direct link or already deleted):", err);
     }
+
+    // Always remove from UI even if server delete fails
     onChange(images.filter((_, i) => i !== index));
     toast.success("Image removed");
   };
@@ -160,14 +184,12 @@ export default function ImageUploader({
               key={i}
               className="relative group aspect-square rounded-xl overflow-hidden border border-gray-100 bg-gray-50"
             >
-              <img
+              <Image
                 src={url}
                 alt={`Product image ${i + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f3f4f6"/><text x="50" y="55" text-anchor="middle" fill="%239ca3af" font-size="12">No image</text></svg>';
-                }}
+                fill
+                className="object-cover"
+                unoptimized={url.includes("daraz") || url.includes("localhost")}
               />
               <button
                 onClick={(e) => {

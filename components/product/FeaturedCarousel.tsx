@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import ProductCard from "@/components/product/ProductCard";
 import { Product } from "@/types";
+import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 
 export default function FeaturedCarousel({
   products,
@@ -54,9 +55,11 @@ export default function FeaturedCarousel({
         <FiChevronLeft size={20} />
       </button>
 
-      <div
+      <StaggerContainer
         ref={scrollRef}
         onScroll={checkScroll}
+        staggerDelay={0.15} // Slower stagger per user request
+        className="rpt-carousel-scroll"
         style={{
           display: "flex",
           gap: 18,
@@ -67,13 +70,19 @@ export default function FeaturedCarousel({
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
+        initial={{ opacity: 0, x: 20 }}
+        whileInView={{ 
+          opacity: 1, 
+          x: 0,
+          transition: { duration: 0.6, ease: "easeOut" } 
+        }}
       >
         {products.map((p) => (
-          <div key={p._id} style={{ flexShrink: 0, width: 280 }}>
+          <StaggerItem key={p._id} direction="right" style={{ flexShrink: 0, width: 280 }}>
             <ProductCard product={p} />
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       <button
         onClick={() => scroll("right")}

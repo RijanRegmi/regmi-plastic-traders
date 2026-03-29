@@ -6,6 +6,7 @@ import { configureCloudinary } from './config/cloudinary';
 configureCloudinary();
 
 import express, { Request, Response, NextFunction } from 'express';
+import path from 'path';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -37,6 +38,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // ─── Security & Parsing ────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,7 +51,13 @@ app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, max: 500, message: 'Too ma
 // ─── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api', routes);
 
-// ─── Health Check ──────────────────────────────────────────────────────────────
+// ─── Welcome & Health Check ───────────────────────────────────────────────────
+app.get('/', (_req, res) => res.json({ 
+  message: 'Welcome to Regmi Plastic Traders API', 
+  status: 'active',
+  environment: process.env.NODE_ENV || 'development'
+}));
+
 app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 
 // ─── Error Handling — MUST be last ────────────────────────────────────────────

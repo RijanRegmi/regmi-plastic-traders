@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { forwardRef } from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
 
-interface StaggerContainerProps {
+export interface StaggerContainerProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   staggerDelay?: number;
   delayChildren?: number;
@@ -11,67 +11,76 @@ interface StaggerContainerProps {
   once?: boolean;
 }
 
-export const staggerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+const StaggerContainer = forwardRef<HTMLDivElement, StaggerContainerProps>(
+  (
+    {
+      children,
+      staggerDelay = 0.1,
+      delayChildren = 0,
+      className = "",
+      once = true,
+      ...props
     },
-  },
-};
-
-export const childVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.25, 1, 0.5, 1],
-    },
-  },
-};
-
-export default function StaggerContainer({
-  children,
-  staggerDelay = 0.1,
-  delayChildren = 0,
-  className = "",
-  once = true,
-}: StaggerContainerProps) {
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once }}
-      variants={{
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: staggerDelay,
-            delayChildren,
+    ref
+  ) => {
+    return (
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once }}
+        variants={{
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: staggerDelay,
+              delayChildren,
+            },
           },
-        },
-        hidden: { opacity: 0 },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+          hidden: { opacity: 0 },
+        }}
+        className={className}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);
 
-export function StaggerItem({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+StaggerContainer.displayName = "StaggerContainer";
+
+export default StaggerContainer;
+
+export function StaggerItem({
+  children,
+  className = "",
+  direction = "up",
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+  direction?: "up" | "down" | "left" | "right";
+} & HTMLMotionProps<"div">) {
+  const variants = {
+    hidden: {
+      opacity: 0,
+      y: direction === "up" ? 20 : direction === "down" ? -20 : 0,
+      x: direction === "left" ? 50 : direction === "right" ? -50 : 0,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      x: 0,
+      transition: { 
+        duration: 0.6, 
+        ease: [0.25, 1, 0.5, 1] as [number, number, number, number] 
+      },
+    },
+  };
+
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-      }}
-      className={className}
-    >
+    <motion.div variants={variants} className={className} {...props}>
       {children}
     </motion.div>
   );

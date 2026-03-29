@@ -60,7 +60,7 @@ export default function ProductImageGallery({
               className={`rpt-pc__badge ${
                 BADGE_CLASS[badge] || "rpt-pc__badge--red"
               }`}
-              style={{ top: 16, right: 16, position: "absolute" }}
+              style={{ top: 16, right: 16, left: "auto", position: "absolute" }}
             >
               {badge}
             </span>
