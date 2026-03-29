@@ -1598,39 +1598,37 @@ html {
 .rpt-cards-grid {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr) !important;
-  gap: 24px !important;
+  gap: 20px !important;
   align-items: stretch !important;
 }
 
-.rpt-cards-grid>* {
+.rpt-cards-grid > * {
   grid-column: span 1 !important;
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   flex: none !important;
-}
-
-.rpt-cards-grid>* {
-  grid-column: span 1 !important;
   height: 100% !important;
-  min-width: 0 !important;
 }
 
 @media (max-width: 1200px) {
   .rpt-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
   }
 }
 
 @media (max-width: 900px) {
   .rpt-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 400px) {
   .rpt-cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 }
 
@@ -3113,47 +3111,59 @@ html {
 /* ── Product card (rpt-pc namespace) ── */
 .rpt-pc {
   background: white;
-  border-radius: 32px;
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s var(--ease-out), box-shadow 0.3s, border-color 0.3s;
-  border: 1px solid transparent;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .rpt-pc:hover {
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
-  border-color: rgba(192, 57, 43, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.13);
+  border-color: rgba(190, 18, 60, 0.18);
 }
 
 .rpt-pc__img-wrap {
   position: relative;
-  height: 240px;
-  background: white;
+  height: 200px;
+  background: #f8f8f7;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   text-decoration: none;
   overflow: hidden;
-  border-radius: 32px 32px 0 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .rpt-pc__img-wrap {
+    height: 170px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rpt-pc__img-wrap {
+    height: 150px;
+  }
 }
 
 .rpt-pc__img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 12px;
   display: block;
-  transition: transform 0.5s var(--ease-out);
-  color: transparent; /* Hides broken image alt text glitch on some browsers */
-  text-indent: -9999px; /* Ensures text doesn't overlap or show up */
+  transition: transform 0.45s var(--ease-out);
 }
 
 .rpt-pc:hover .rpt-pc__img {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .rpt-pc__no-img {
@@ -3169,15 +3179,15 @@ html {
 
 .rpt-pc__badge {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 10px;
+  left: 10px;
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 5px 14px;
-  border-radius: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
   z-index: 2;
 }
 
@@ -3198,7 +3208,7 @@ html {
 
 .rpt-pc__badge--yellow {
   background: #fbbf24;
-  color: white;
+  color: #1a1a1a;
 }
 
 .rpt-pc__oos {
@@ -3226,10 +3236,17 @@ html {
 }
 
 .rpt-pc__body {
-  padding: 24px;
+  padding: 14px 14px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 0;
+}
+
+@media (max-width: 480px) {
+  .rpt-pc__body {
+    padding: 10px 10px 12px;
+  }
 }
 
 .rpt-pc__name-link {
@@ -3238,16 +3255,22 @@ html {
 
 .rpt-pc__name {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-1);
-  line-height: 1.3;
-  margin-bottom: 8px;
+  line-height: 1.35;
+  margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.2s;
+}
+
+@media (max-width: 480px) {
+  .rpt-pc__name {
+    font-size: 13px;
+  }
 }
 
 .rpt-pc__name-link:hover .rpt-pc__name {
@@ -3256,61 +3279,84 @@ html {
 
 .rpt-pc__desc {
   font-family: var(--font-body);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--text-4);
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+@media (max-width: 480px) {
+  .rpt-pc__desc {
+    display: none;
+  }
+}
+
 .rpt-pc__stars-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 8px;
   margin-top: auto;
 }
 
 .rpt-pc__review-count {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-4);
 }
 
 .rpt-pc__price-block {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .rpt-pc__price {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: #be123c;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .rpt-pc__price {
+    font-size: 17px;
+  }
 }
 
 .rpt-pc__buy-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  padding: 12px;
-  background: #fff1f2;
-  border-radius: 12px;
-  color: #be123c;
+  padding: 11px 8px;
+  background: #be123c;
+  border-radius: 10px;
+  color: white;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   text-decoration: none;
   text-transform: uppercase;
-  transition: background 0.2s, transform 0.2s;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.15s;
+  margin-top: auto;
 }
 
 .rpt-pc__buy-btn:hover {
-  background: #ffe4e6;
+  background: #9f1239;
   transform: scale(1.02);
+}
+
+@media (max-width: 480px) {
+  .rpt-pc__buy-btn {
+    font-size: 10px;
+    padding: 9px 6px;
+    border-radius: 8px;
+  }
 }
 
 /* ── Empty State ── */
