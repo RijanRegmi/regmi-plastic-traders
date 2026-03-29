@@ -3741,9 +3741,11 @@ html {
 .rpt-gallery__main-img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important;
+  object-position: center center;
   display: block;
   transition: transform 0.4s var(--ease-out);
+  padding: 8px;
 }
 
 .rpt-gallery__main:hover .rpt-gallery__main-img {
