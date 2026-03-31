@@ -5,6 +5,7 @@ import ProductsFilter from "./ProductsFilter";
 import { Product } from "@/types";
 import Reveal from "@/components/ui/Reveal";
 import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
+import Link from "next/link";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -136,11 +137,30 @@ export default async function ProductsPage({
             </StaggerContainer>
           ) : (
             <div className="rpt-empty-state">
-              <div className="rpt-empty-state__emoji">🔍</div>
-              <h3 className="rpt-empty-state__title">{emptyStateText}</h3>
-              <p className="rpt-empty-state__sub">
-                Try a different search or category
-              </p>
+              {(!resolvedParams.search && !resolvedParams.category) ? (
+                <>
+                  <div className="rpt-empty-state__emoji">🏬</div>
+                  <h3 className="rpt-empty-state__title">Products will be added soon</h3>
+                  <p className="rpt-empty-state__sub">
+                    We&apos;re currently updating our catalog. Our latest plastic products will be listed here shortly!
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="rpt-empty-state__emoji">🔍</div>
+                  <h3 className="rpt-empty-state__title">{emptyStateText}</h3>
+                  <p className="rpt-empty-state__sub">
+                    We couldn&apos;t find any items matching your current filters.
+                  </p>
+                  <Link 
+                    href="/products" 
+                    className="rpt-btn-header" 
+                    style={{ marginTop: "24px", display: "inline-flex" }}
+                  >
+                    Clear all filters
+                  </Link>
+                </>
+              )}
             </div>
           )}
 

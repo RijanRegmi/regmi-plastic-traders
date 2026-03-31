@@ -94,7 +94,7 @@ export async function generateMetadata({
   const product = await getProduct(slug);
   if (!product) return { title: "Product Not Found" };
   return {
-    title: `${product.name} — Regmi Plastic Traders`,
+    title: `${product.name.replace(/&amp;/g, "&")} — Regmi Plastic Traders`,
     description: product.description,
   };
 }
@@ -179,7 +179,9 @@ export default async function ProductDetailPage({
                 </div>
 
                 {/* Name */}
-                <h1 className="rpt-product-detail__name">{product.name}</h1>
+                <h1 className="rpt-product-detail__name">
+                  {product.name.replace(/&amp;/g, "&")}
+                </h1>
 
                 {/* Rating */}
                 <div className="rpt-product-detail__rating-row">

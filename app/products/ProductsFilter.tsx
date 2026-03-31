@@ -18,9 +18,12 @@ export default function ProductsFilter({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState(currentSearch || "");
-  useEffect(() => {
+  const [prevSearchProp, setPrevSearchProp] = useState(currentSearch);
+
+  if (currentSearch !== prevSearchProp) {
+    setPrevSearchProp(currentSearch);
     setSearch(currentSearch || "");
-  }, [currentSearch]);
+  }
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {

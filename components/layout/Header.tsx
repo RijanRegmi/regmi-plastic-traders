@@ -124,7 +124,7 @@ export default function Header({
             )}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div className="rpt-logo__name" style={{ fontSize: "16px", lineHeight: "1.2" }}>
+            <div className="rpt-logo__name" style={{ fontSize: "19px", lineHeight: "1.2" }}>
               {storeName}
             </div>
             <div className="rpt-logo__sub">Est. {estYear} · Nepal</div>

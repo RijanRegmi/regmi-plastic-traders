@@ -47,9 +47,7 @@ export default function ProductImageGallery({
           ) : (
             <div className="rpt-gallery__placeholder">
               <span style={{ fontSize: 80, opacity: 0.15 }}>📦</span>
-              <p
-                style={{ color: "var(--text-4)", fontSize: 13, marginTop: 12 }}
-              >
+              <p style={{ color: "var(--text-4)", fontSize: 13, marginTop: 12 }}>
                 No image available
               </p>
             </div>
@@ -57,23 +55,19 @@ export default function ProductImageGallery({
 
           {badge && (
             <span
-              className={`rpt-pc__badge ${
-                BADGE_CLASS[badge] || "rpt-pc__badge--red"
-              }`}
+              className={`rpt-pc__badge ${BADGE_CLASS[badge] || "rpt-pc__badge--red"}`}
               style={{ top: 16, right: 16, left: "auto", position: "absolute" }}
             >
               {badge}
             </span>
           )}
 
-          {/* Out of stock overlay */}
           {!inStock && (
-            <div className="rpt-product-card__oos">
-              <span className="rpt-product-card__oos-label">Out of Stock</span>
+            <div className="rpt-gallery__oos">
+              <span className="rpt-gallery__oos-label">Out of Stock</span>
             </div>
           )}
 
-          {/* Zoom button */}
           {activeImg && (
             <button
               onClick={() => setLightbox(true)}
@@ -84,7 +78,6 @@ export default function ProductImageGallery({
             </button>
           )}
 
-          {/* Prev / Next arrows */}
           {images.length > 1 && (
             <>
               <button
@@ -104,16 +97,13 @@ export default function ProductImageGallery({
             </>
           )}
 
-          {/* Dot indicators */}
           {images.length > 1 && (
             <div className="rpt-gallery__dots">
               {images.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIdx(i)}
-                  className={`rpt-gallery__dot${
-                    i === activeIdx ? " rpt-gallery__dot--active" : ""
-                  }`}
+                  className={`rpt-gallery__dot${i === activeIdx ? " rpt-gallery__dot--active" : ""}`}
                   aria-label={`Image ${i + 1}`}
                 />
               ))}
@@ -128,9 +118,7 @@ export default function ProductImageGallery({
               <button
                 key={i}
                 onClick={() => setActiveIdx(i)}
-                className={`rpt-gallery__thumb${
-                  i === activeIdx ? " rpt-gallery__thumb--active" : ""
-                }`}
+                className={`rpt-gallery__thumb${i === activeIdx ? " rpt-gallery__thumb--active" : ""}`}
                 aria-label={`View image ${i + 1}`}
               >
                 <img src={img} alt={`${name} thumbnail ${i + 1}`} />
@@ -155,20 +143,14 @@ export default function ProductImageGallery({
             <>
               <button
                 className="rpt-lightbox__prev"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  prev();
-                }}
+                onClick={(e) => { e.stopPropagation(); prev(); }}
                 aria-label="Previous"
               >
                 <FiChevronLeft size={28} />
               </button>
               <button
                 className="rpt-lightbox__next"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  next();
-                }}
+                onClick={(e) => { e.stopPropagation(); next(); }}
                 aria-label="Next"
               >
                 <FiChevronRight size={28} />

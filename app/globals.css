@@ -407,7 +407,7 @@ html {
   padding: 8px 15px;
   border-radius: 8px;
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text-3);
@@ -2082,67 +2082,51 @@ html {
 ═══════════════════════════════════════════════════════ */
 .rpt-page-hero {
   position: relative;
-  padding: 150px 24px 90px;
+  padding: 110px 24px 60px;
   text-align: center;
   overflow: hidden;
 }
 
-/* Bg wrapper — plain fallback gradient, no pseudo-element overlays */
+/* Bg wrapper — plain fallback gradient + dots */
 .rpt-page-hero__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(150deg, #f5ede8 0%, #f0e8e6 100%);
+  background: #fdfcfb;
+  background-image: radial-gradient(rgba(192, 57, 43, 0.04) 1.5px, transparent 0);
+  background-size: 28px 28px;
 }
 
-.rpt-page-hero__bg::before {
-  display: none;
-  content: none;
+.rpt-page-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  background: rgba(192, 57, 43, 0.06);
+  border: 1px solid rgba(192, 57, 43, 0.15);
+  color: var(--red);
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
 }
 
-.rpt-page-hero__bg::after {
-  display: none;
-  content: none;
-}
-
-/* The background photo — full size, no tint, no overlay whatsoever */
-.rpt-page-hero__bg-img {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 1;
-}
-
-.rpt-page-hero__bg-img::before {
-  display: none;
-  content: none;
-}
-
-.rpt-page-hero__bg-img::after {
-  display: none;
-  content: none;
-}
-
-/* Text sits above the image */
-.rpt-page-hero__content {
-  position: relative;
-  z-index: 2;
-  max-width: 720px;
-  margin: 0 auto;
-  animation: fadeInUp 0.7s var(--ease-out) 0.1s both;
-}
-
-/* Default text colours when no image */
 .rpt-page-hero__title {
   font-family: var(--font-display);
-  font-size: clamp(38px, 5.5vw, 66px);
+  font-size: clamp(40px, 6vw, 76px);
   font-weight: 800;
   color: var(--text-1);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  margin-bottom: 16px;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  margin-bottom: 20px;
+}
+
+.rpt-text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--red);
+  display: block;
 }
 
 .rpt-page-hero__sub {
@@ -2150,12 +2134,41 @@ html {
   font-size: 17px;
   color: var(--text-3);
   line-height: 1.7;
+  max-width: 580px;
+  margin: 0 auto;
 }
 
-/* When a bg photo is present, make text white with subtle shadow for legibility */
-.rpt-page-hero:has(.rpt-page-hero__bg-img[style*="url"]) .rpt-page-hero__title {
-  color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+/* Decorative shapes */
+.rpt-hero-shape {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.rpt-hero-shape--1 {
+  top: 10%;
+  right: 5%;
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgba(192, 57, 43, 0.1);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  animation: rotate 20s linear infinite;
+}
+
+.rpt-hero-shape--2 {
+  bottom: 10%;
+  left: 5%;
+  width: 80px;
+  height: 80px;
+  background: rgba(230, 126, 0, 0.05);
+  border-radius: 50%;
+  animation: floatBadge 4s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .rpt-page-hero:has(.rpt-page-hero__bg-img[style*="url"]) .rpt-page-hero__sub {
@@ -3354,27 +3367,40 @@ html {
 /* ── Empty State ── */
 .rpt-empty-state {
   text-align: center;
-  padding: 80px 24px;
+  padding: 100px 32px;
+  background: white;
+  border-radius: 24px;
+  border: 1px dashed var(--border);
+  max-width: 580px;
+  margin: 60px auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.8s var(--ease-out) both;
 }
 
 .rpt-empty-state__emoji {
-  font-size: 56px;
-  opacity: 0.4;
-  margin-bottom: 16px;
+  font-size: 64px;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1));
 }
 
 .rpt-empty-state__title {
   font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-3);
-  margin-bottom: 8px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
 }
 
 .rpt-empty-state__sub {
   font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--text-4);
+  font-size: 15px;
+  color: var(--text-3);
+  max-width: 400px;
+  line-height: 1.6;
 }
 
 .rpt-empty {
@@ -3636,6 +3662,7 @@ html {
 @media (max-width: 480px) {
   .rpt-product-detail__ctas {
     flex-direction: column;
+    width: 85%;
   }
 
   .rpt-product-detail__ctas>* {
@@ -3699,6 +3726,7 @@ html {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  width: 100%;
 }
 
 .rpt-product-detail__meta-row-item {
@@ -3777,9 +3805,9 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center center;
   display: block;
   transition: transform 0.6s var(--ease-out);
@@ -5139,4 +5167,98 @@ html {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .rpt-product-detail-section {
+    padding: 12px 0 24px;
+  }
+
+  .rpt-product-detail__desc {
+    width: 85%;
+  }
+
+  .rpt-product-detail__trust {
+      width: 85%;
+  }
+
+
+  .rpt-product-detail-grid {
+    gap: 12px;
+  }
+
+  .rpt-product-detail__meta-table{
+    width: 85%;
+  }
+
+  .rpt-gallery__main {
+    width: 85% !important;
+    height: 100%;
+    margin: 0 0 12px;
+    aspect-ratio: 1 / 1;
+    max-height: 360px !important;
+    border-radius: 10px;
+    background: var(--dark-2);
+  }
+
+  .rpt-gallery__main-img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    padding: 0 !important;
+  }
+
+  /* 5. Mobile Thumbnails — Scaled down to match compact frame */
+  .rpt-gallery__thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--dark-2);
+    flex-shrink: 0;
+  }
+
+  .rpt-gallery__thumb img {
+    object-fit: cover;
+    padding: 0;
+  }
+
+  /* 7. Product info refinements for small screens */
+  .rpt-product-detail__name {
+    font-size: clamp(20px, 5vw, 32px);
+    width: 80%;
+  }
+
+  .rpt-product-detail__price {
+    font-size: 32px;
+  }
+
+  /* 8. Full width CTA buttons */
+  .rpt-product-detail__ctas {
+    flex-direction: column;
+  }
+
+  .rpt-product-detail__ctas > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .rpt-gallery__thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+  }
+  
+  .rpt-breadcrumb__current {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 360px) {
+  .rpt-product-detail__trust {
+    grid-template-columns: 1fr;
+  }
 }

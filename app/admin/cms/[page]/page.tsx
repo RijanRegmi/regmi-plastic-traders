@@ -82,11 +82,13 @@ function HeroBgUploadField({
 }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentPath);
+  const [prevPathProp, setPrevPathProp] = useState(currentPath);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  if (currentPath !== prevPathProp) {
+    setPrevPathProp(currentPath);
     setPreview(currentPath);
-  }, [currentPath]);
+  }
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -170,9 +172,13 @@ function HeroBgUploadField({
 function LogoUploadField({ currentUrl, onUploaded }: { currentUrl: string; onUploaded: (path: string) => void }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentUrl);
+  const [prevUrlProp, setPrevUrlProp] = useState(currentUrl);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { setPreview(currentUrl); }, [currentUrl]);
+  if (currentUrl !== prevUrlProp) {
+    setPrevUrlProp(currentUrl);
+    setPreview(currentUrl);
+  }
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) { toast.error("Only image files are allowed"); return; }

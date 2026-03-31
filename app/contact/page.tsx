@@ -41,33 +41,42 @@ export default async function ContactPage() {
   // Auto-convert any Google Maps link to embed URL
   function toEmbedUrl(url: string): string {
     if (!url) return "";
-    // Already an embed URL — use as-is
-    if (url.includes("maps/embed")) return url;
-    // Shortened link (maps.app.goo.gl or goo.gl) — can't convert server-side, use place search fallback
+
+    // Target zoom level for "neighborhood view" (Image 2 reference)
+    const TARGET_ZOOM = "!1d3500";
+
+    // If it's already an embed URL, attempt to "force" the zoom out
+    if (url.includes("maps/embed")) {
+      // Replace common small zoom patterns (!1d200, !1d500, etc.) with TARGET_ZOOM
+      return url.replace(/!1d([0-9]{2,4}\.?[0-9]*)/, TARGET_ZOOM);
+    }
+
+    // Shortened link (maps.app.goo.gl or goo.gl)
     if (url.includes("goo.gl")) {
-      // Extract coords if present, otherwise fall back to a search embed
       const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (coordMatch) {
-        return `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d500!2d${coordMatch[2]}!3d${coordMatch[1]}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2snp!4v1`;
+        return `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3500!2d${coordMatch[2]}!3d${coordMatch[1]}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2snp!4v1`;
       }
-      return url; // pass through, may still work for some shortened links
+      return url; 
     }
-    // Full Google Maps place URL — extract place ID and coords
+
+    // Full Google Maps place URL
     const placeIdMatch = url.match(/!1s([^!]+).*!2s([^!]+)/);
     const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
     const queryMatch = url.match(/[?&]q=([^&]+)/);
+
     if (coordMatch) {
       const lat = coordMatch[1];
       const lng = coordMatch[2];
-      // Build embed URL with coords + place ID if available
       const placeId = placeIdMatch
         ? `!1m2!1s${encodeURIComponent(placeIdMatch[1])}!2s${encodeURIComponent(placeIdMatch[2])}`
         : "";
-      return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d500!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3${placeId}!5e0!3m2!1sen!2snp!4v1`;
+      return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3${placeId}!5e0!3m2!1sen!2snp!4v1`;
     }
+
     // Search query fallback
     if (queryMatch) {
-      return `https://www.google.com/maps/embed/v1/place?key=&q=${queryMatch[1]}`;
+      return `https://www.google.com/maps/embed/v1/place?key=&zoom=15&q=${queryMatch[1]}`;
     }
     return url;
   }
@@ -78,6 +87,21 @@ export default async function ContactPage() {
   const pageTitle = unwrap(cms.pageTitle, "Contact Us");
   const pageSubtitle = unwrap(cms.pageSubtitle, "We'd love to hear from you");
   const formTitle = unwrap(cms.formTitle, "Send a Message");
+
+  // Title Splitting Logic:
+  // If user types "Part 1 | Part 2" in CMS, Part 2 will be hollow.
+  // Default "Contact Us" is automatically split to "We are here | to help you".
+  let titleMain = pageTitle;
+  let titleOutline = "";
+
+  if (pageTitle.includes("|")) {
+    const [m, o] = pageTitle.split("|");
+    titleMain = m?.trim() || "";
+    titleOutline = o?.trim() || "";
+  } else if (pageTitle === "Contact Us") {
+    titleMain = "We are here";
+    titleOutline = "to help you";
+  }
 
   const CONTACTS = [
     { icon: FiPhone, label: "Phone", value: phone, href: `tel:${phone}` },
@@ -90,21 +114,24 @@ export default async function ContactPage() {
     <div className="rpt-page">
       <Header storeName={storeName} cms={cms} />
 
-      {/* ── Hero ── */}
-      <div className="rpt-page-hero">
-        <div className="rpt-page-hero__bg" />
-        <Reveal direction="up" className="rpt-page-hero__content">
-          <p className="rpt-label">{pageLabel}</p>
-          <h1 className="rpt-page-hero__title">{pageTitle}</h1>
-          <p className="rpt-page-hero__sub">{pageSubtitle}</p>
-        </Reveal>
-      </div>
-
-      <main className="rpt-page-body">
-
+      <main className="rpt-page-body" style={{ background: "white" }}>
         {/* ── Contact grid ── */}
-        <section className="rpt-section" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
+        <section className="rpt-section" style={{ paddingTop: "120px", paddingBottom: "80px" }}>
           <div className="rpt-container">
+            {/* Integrated Header (Replacment for Banner) */}
+            <Reveal direction="up" style={{ textAlign: "center", marginBottom: "80px" }}>
+              <div className="rpt-page-pill">{pageLabel}</div>
+              <h1 className="rpt-page-hero__title" style={{ marginBottom: "24px" }}>
+                {titleMain}
+                {titleOutline && (
+                  <span className="rpt-text-outline"> {titleOutline}</span>
+                )}
+              </h1>
+              <p className="rpt-page-hero__sub" style={{ color: "var(--text-4)" }}>
+                {pageSubtitle}
+              </p>
+            </Reveal>
+
             <div className="rpt-contact-grid">
 
               {/* Left — info */}
