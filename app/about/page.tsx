@@ -123,9 +123,10 @@ export default async function AboutPage() {
       <div className="rpt-page-hero">
         <div className="rpt-page-hero__bg">
           {aboutBgUrl && (
-            <div
+            <img
+              src={aboutBgUrl}
+              alt="About Banner"
               className="rpt-page-hero__bg-img"
-              style={{ backgroundImage: `url(${aboutBgUrl})` }}
             />
           )}
         </div>

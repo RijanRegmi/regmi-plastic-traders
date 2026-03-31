@@ -71,9 +71,10 @@ export default async function BlogPage() {
       <div className="rpt-page-hero">
         <div className="rpt-page-hero__bg">
           {blogBgUrl && (
-            <div
+            <img
+              src={blogBgUrl}
+              alt="Blog Banner"
               className="rpt-page-hero__bg-img"
-              style={{ backgroundImage: `url(${blogBgUrl})` }}
             />
           )}
         </div>

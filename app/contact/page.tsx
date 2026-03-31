@@ -15,6 +15,14 @@ function unwrap(v: unknown, fallback = ""): string {
   return typeof v === "string" && v ? v : fallback;
 }
 
+const API_BASE = API.replace(/\/api$/, "");
+const getImageUrl = (path?: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+};
+
 async function getData() {
   try {
     const [globalRes, contactRes] = await Promise.allSettled([
@@ -110,27 +118,40 @@ export default async function ContactPage() {
     { icon: FiClock, label: "Business Hours", value: hours, href: "#" },
   ];
 
+  const contactBgPath = unwrap(cms.contactBgImage, "");
+  const contactBgUrl = getImageUrl(contactBgPath);
+
   return (
     <div className="rpt-page">
       <Header storeName={storeName} cms={cms} />
 
+      {/* ── Page Hero ── */}
+      <div className="rpt-page-hero">
+        <div className="rpt-page-hero__bg">
+          {contactBgUrl && (
+            <img
+              src={contactBgUrl}
+              alt="Contact Banner"
+              className="rpt-page-hero__bg-img"
+            />
+          )}
+        </div>
+        <Reveal direction="up" className="rpt-page-hero__content">
+          <p className="rpt-label">{pageLabel}</p>
+          <h1 className="rpt-page-hero__title">
+            {titleMain}
+            {titleOutline && (
+              <span className="rpt-text-outline"> {titleOutline}</span>
+            )}
+          </h1>
+          <p className="rpt-page-hero__sub">{pageSubtitle}</p>
+        </Reveal>
+      </div>
+
       <main className="rpt-page-body" style={{ background: "white" }}>
         {/* ── Contact grid ── */}
-        <section className="rpt-section" style={{ paddingTop: "120px", paddingBottom: "80px" }}>
+        <section className="rpt-section" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
           <div className="rpt-container">
-            {/* Integrated Header (Replacment for Banner) */}
-            <Reveal direction="up" style={{ textAlign: "center", marginBottom: "80px" }}>
-              <div className="rpt-page-pill">{pageLabel}</div>
-              <h1 className="rpt-page-hero__title" style={{ marginBottom: "24px" }}>
-                {titleMain}
-                {titleOutline && (
-                  <span className="rpt-text-outline"> {titleOutline}</span>
-                )}
-              </h1>
-              <p className="rpt-page-hero__sub" style={{ color: "var(--text-4)" }}>
-                {pageSubtitle}
-              </p>
-            </Reveal>
 
             <div className="rpt-contact-grid">
 
