@@ -245,7 +245,7 @@ const PAGES: Record<string, PageDef> = {
           { key: "storeName", label: "Store Name", type: "text", placeholder: "Regmi Plastic Traders", span: "half" },
           { key: "logoLetter", label: "Logo Fallback Letter", type: "text", placeholder: "R", span: "half" },
           { key: "tagline", label: "Site Tagline", type: "text", placeholder: "Nepal's trusted plastic store", span: "full" },
-          { key: "establishedYear", label: "Established Year", type: "text", placeholder: "2005", span: "half" },
+          { key: "establishedYear", label: "Established Year", type: "text", placeholder: "1995", span: "half" },
           { key: "footerTagline", label: "Footer Tagline", type: "textarea", placeholder: "Your trusted source for quality plastic products across Nepal.", span: "full" },
           { key: "copyrightText", label: "Footer Copyright Extra", type: "text", placeholder: "Made with ♥ in Nepal", span: "half" },
         ],
@@ -283,7 +283,7 @@ const PAGES: Record<string, PageDef> = {
           { key: "socialFacebook", label: "Facebook URL", type: "url", placeholder: "https://facebook.com/regmiplastic", span: "half" },
           { key: "socialInstagram", label: "Instagram URL", type: "url", placeholder: "https://instagram.com/regmiplastic", span: "half" },
           { key: "socialYoutube", label: "YouTube URL", type: "url", placeholder: "https://youtube.com/@regmiplastic", span: "half" },
-          { key: "socialWhatsapp", label: "WhatsApp Number", type: "tel", placeholder: "+9779841234567", span: "half", hint: "Full number with country code, no spaces" },
+          { key: "socialWhatsapp", label: "WhatsApp Number", type: "tel", placeholder: "+9779851012554", span: "half", hint: "Full number with country code, no spaces" },
         ],
       },
       {
@@ -314,7 +314,7 @@ const PAGES: Record<string, PageDef> = {
         icon: <FiLayout size={14} />,
         description: "The very first thing visitors see — headline, subtitle, CTA buttons, and background photo.",
         fields: [
-          { key: "heroBadge", label: "Badge Pill Text", type: "text", placeholder: "Est. 2005 · Kathmandu, Nepal", span: "full" },
+          { key: "heroBadge", label: "Badge Pill Text", type: "text", placeholder: "Est. 1995 · Kathmandu, Nepal", span: "full" },
           { key: "heroTitle", label: "Hero Headline", type: "textarea", placeholder: "Nepal's Most Trusted Plastic Goods Store", span: "full" },
           { key: "heroSubtitle", label: "Hero Subtitle Paragraph", type: "textarea", placeholder: "Durable, affordable, and high-quality…", span: "full" },
           { key: "heroButtonText", label: "Primary Button Text", type: "text", placeholder: "Shop Now", span: "half" },
@@ -351,9 +351,9 @@ const PAGES: Record<string, PageDef> = {
         fields: [
           { key: "aboutSectionLabel", label: "Section Label", type: "text", placeholder: "Who Are We", span: "half" },
           { key: "aboutSectionHeading", label: "Section Heading", type: "text", placeholder: "Welcome to Regmi", span: "half" },
-          { key: "aboutText", label: "About Paragraph", type: "textarea", placeholder: "Regmi Plastic Traders has been serving Nepal since 2005…", span: "full" },
+          { key: "aboutText", label: "About Paragraph", type: "textarea", placeholder: "Regmi Plastic Traders has been serving Nepal since 1995…", span: "full" },
           { key: "aboutCardEmoji", label: "Store Card Emoji", type: "text", placeholder: "🏪", span: "half" },
-          { key: "aboutCardSub", label: "Store Card Subtitle", type: "text", placeholder: "Serving Nepal since 2005", span: "half" },
+          { key: "aboutCardSub", label: "Store Card Subtitle", type: "text", placeholder: "Serving Nepal since 1995", span: "half" },
           { key: "aboutFeature1", label: "Feature Checkmark 1", type: "text", placeholder: "100% Quality Guaranteed", span: "half" },
           { key: "aboutFeature2", label: "Feature Checkmark 2", type: "text", placeholder: "Fast Delivery Across Nepal", span: "half" },
           { key: "aboutFeature3", label: "Feature Checkmark 3", type: "text", placeholder: "Affordable Prices", span: "half" },
@@ -438,7 +438,7 @@ const PAGES: Record<string, PageDef> = {
         fields: [
           { key: "heroLabel", label: "Small Label", type: "text", placeholder: "Our Story", span: "half" },
           { key: "heroTitle", label: "Page Heading", type: "text", placeholder: "About Regmi Plastic Traders", span: "half" },
-          { key: "heroSubtitle", label: "Hero Subtitle", type: "textarea", placeholder: "Serving Nepal since 2005…", span: "full" },
+          { key: "heroSubtitle", label: "Hero Subtitle", type: "textarea", placeholder: "Serving Nepal since 1995…", span: "full" },
         ],
       },
       {
@@ -597,7 +597,7 @@ const PAGES: Record<string, PageDef> = {
         description: "Meta tags specifically for the homepage (/).",
         fields: [
           { key: "homeMetaTitle", label: "Page Title", type: "text", placeholder: "Regmi Plastic Traders — Nepal's Most Trusted Plastic Store", span: "full", hint: "Ideal: 50–60 chars. Shows in browser tab and Google search results." },
-          { key: "homeMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Shop 500+ quality plastic products at Regmi Plastic Traders. Serving Kathmandu and all of Nepal since 2005. Free delivery available.", span: "full", hint: "Ideal: 120–160 chars." },
+          { key: "homeMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Shop 500+ quality plastic products at Regmi Plastic Traders. Serving Kathmandu and all of Nepal since 1995. Free delivery available.", span: "full", hint: "Ideal: 120–160 chars." },
           { key: "homeMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "plastic store kathmandu, buy plastic products nepal, household plastic goods", span: "full" },
           { key: "homeOgTitle", label: "OG Title", type: "text", placeholder: "Regmi Plastic Traders — Nepal's Most Trusted Plastic Store", span: "full" },
           { key: "homeOgDescription", label: "OG Description", type: "textarea", placeholder: "Quality plastic products delivered across Nepal. Visit Regmi Plastic Traders.", span: "full" },
@@ -630,10 +630,10 @@ const PAGES: Record<string, PageDef> = {
         icon: <FiInfo size={14} />,
         description: "Meta tags for the /about page.",
         fields: [
-          { key: "aboutMetaTitle", label: "Page Title", type: "text", placeholder: "About Us — Regmi Plastic Traders | Est. 2005, Nepal", span: "full" },
-          { key: "aboutMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Learn about Regmi Plastic Traders — Nepal's trusted plastic goods store since 2005. Our story, mission, and values.", span: "full" },
+          { key: "aboutMetaTitle", label: "Page Title", type: "text", placeholder: "About Us — Regmi Plastic Traders | Est. 1995, Nepal", span: "full" },
+          { key: "aboutMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Learn about Regmi Plastic Traders — Nepal's trusted plastic goods store since 1995. Our story, mission, and values.", span: "full" },
           { key: "aboutMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "about regmi plastic traders, nepal plastic store history, trusted plastic supplier nepal", span: "full" },
-          { key: "aboutOgTitle", label: "OG Title", type: "text", placeholder: "About Regmi Plastic Traders — Our Story Since 2005", span: "full" },
+          { key: "aboutOgTitle", label: "OG Title", type: "text", placeholder: "About Regmi Plastic Traders — Our Story Since 1995", span: "full" },
           { key: "aboutOgDescription", label: "OG Description", type: "textarea", placeholder: "19+ years serving Nepal with quality plastic products. Discover our story.", span: "full" },
           { key: "aboutOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-about.jpg", span: "half" },
           { key: "aboutCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/about", span: "half" },

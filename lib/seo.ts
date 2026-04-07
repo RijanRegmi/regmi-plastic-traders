@@ -61,7 +61,9 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
   const pageDesc = unwrap(page.pageSubtitle, "") || unwrap(seo[`${pageId}Description`], "") || defaultDesc;
   const pageKeywords = unwrap(seo[`${pageId}Keywords`], "") || defaultTags;
 
-  const titleStr = pageTitle ? `${pageTitle} | ${storeName}` : storeName;
+  const titleStr = pageTitle 
+    ? `${pageTitle} | ${storeName}` 
+    : `${storeName} | Nepal's Most Trusted Plastic Goods Store`;
 
   return {
     title: overrides?.title || titleStr,

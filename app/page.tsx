@@ -47,10 +47,6 @@ function str(raw: unknown, fallback = ""): string {
   const v = unwrap(raw);
   return typeof v === "string" && v.trim() ? v : fallback;
 }
-function arr<T>(raw: unknown, fallback: T[]): T[] {
-  const v = unwrap(raw);
-  return Array.isArray(v) && v.length > 0 ? (v as T[]) : fallback;
-}
 
 export const dynamic = "force-dynamic";
 
@@ -191,7 +187,7 @@ export default async function HomePage() {
   const aboutHeading = str(cms.aboutSectionHeading, "Welcome to");
   const aboutText = str(
     cms.aboutText,
-    "Regmi Plastic Traders has been serving Nepal since 2005, specializing in high-quality plastic household items, industrial containers, and storage solutions.",
+    `Regmi Plastic Traders is Nepal's most trusted plastic goods store, serving since 2005. We specialize in high-quality household items, industrial containers, and durable plastic solutions for home and business.`
   );
   const aboutCardEmoji = str(cms.aboutCardEmoji, "🏪");
   const aboutCardSub = str(cms.aboutCardSub, "Serving Nepal since 2005");

@@ -50,29 +50,37 @@ export function Typewriter({
       className={className}
       style={{ display: "inline" }}
     >
-      {words.map((word, wordIndex) => (
-        <span 
-          key={`word-${wordIndex}`} 
-          style={{ 
-            display: "inline-block", 
-            whiteSpace: "nowrap" 
-          }}
-        >
-          {word.split("").map((char, charIndex) => (
-            <motion.span
-              key={`char-${charIndex}`}
-              variants={item}
-              style={{ display: "inline-block" }}
-            >
-              {char}
-            </motion.span>
-          ))}
-          {/* Add a space after each word, except the last one in the sentence */}
-          {wordIndex < words.length - 1 && (
-            <span style={{ display: "inline-block" }}>&nbsp;</span>
-          )}
-        </span>
-      ))}
+      {/* Static text for SEO bots and screen readers */}
+      <span style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0,0,0,0)", border: 0 }}>
+        {text}
+      </span>
+
+      {/* Animated text hidden from screen readers to prevent double reading */}
+      <span aria-hidden="true">
+        {words.map((word, wordIndex) => (
+          <span 
+            key={`word-${wordIndex}`} 
+            style={{ 
+              display: "inline-block", 
+              whiteSpace: "nowrap" 
+            }}
+          >
+            {word.split("").map((char, charIndex) => (
+              <motion.span
+                key={`char-${charIndex}`}
+                variants={item}
+                style={{ display: "inline-block" }}
+              >
+                {char}
+              </motion.span>
+            ))}
+            {/* Add a space after each word, except the last one in the sentence */}
+            {wordIndex < words.length - 1 && (
+              <span style={{ display: "inline-block" }}>&nbsp;</span>
+            )}
+          </span>
+        ))}
+      </span>
     </motion.span>
   );
 }
