@@ -187,7 +187,7 @@ export default async function HomePage() {
   const aboutHeading = str(cms.aboutSectionHeading, "Welcome to");
   const aboutText = str(
     cms.aboutText,
-    `Regmi Plastic Traders is recognized as Nepal's most trusted plastic store, serving customers since 1995. We take pride in providing durable, high-quality plastic goods for homes and businesses across the country.`
+    `Regmi Plastic Traders is recognized as Nepal's most trusted plastic store. Since 1995, the Regmi family has served Kathmandu and beyond with quality plastic products. As a leading name in the industry, Regmi provides durable goods for every home.`
   );
   const aboutCardEmoji = str(cms.aboutCardEmoji, "🏪");
   const aboutCardSub = str(cms.aboutCardSub, "Serving Nepal since 2005");

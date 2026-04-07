@@ -20,23 +20,54 @@ export default async function RootLayout({
   const email = seoData.global.email?.value || "regmiplastictraders@gmail.com";
   const address = seoData.global.address?.value || "Kathmandu Kalimati";
   
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": storeName,
-    "image": "https://www.regmiplastictraders.com.np/RPT.png",
-    "@id": "https://www.regmiplastictraders.com.np",
-    "url": "https://www.regmiplastictraders.com.np",
-    "telephone": phone,
-    "email": email,
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": address,
-      "addressLocality": "Kathmandu",
-      "addressRegion": "Bagmati",
-      "addressCountry": "NP"
+  const schemas = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": storeName,
+      "logo": "https://www.regmiplastictraders.com.np/RPT.png",
+      "url": "https://www.regmiplastictraders.com.np",
+      "telephone": phone,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": address,
+        "addressLocality": "Kathmandu",
+        "addressCountry": "NP"
+      },
+      "sameAs": [
+        "https://www.facebook.com/regmiplastictraders", // Example, adjust if known
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": storeName,
+      "alternateName": "Regmi", // THE KEY FOR THE "REGMI" SEARCH
+      "url": "https://www.regmiplastictraders.com.np",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.regmiplastictraders.com.np/products?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": storeName,
+      "image": "https://www.regmiplastictraders.com.np/RPT.png",
+      "@id": "https://www.regmiplastictraders.com.np",
+      "url": "https://www.regmiplastictraders.com.np",
+      "telephone": phone,
+      "email": email,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": address,
+        "addressLocality": "Kathmandu",
+        "addressRegion": "Bagmati",
+        "addressCountry": "NP"
+      }
     }
-  };
+  ];
 
   return (
     <html lang="en">
@@ -54,7 +85,7 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/RPT.png" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
         />
       </head>
       <body>

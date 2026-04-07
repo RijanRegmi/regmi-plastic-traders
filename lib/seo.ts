@@ -70,6 +70,12 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
     description: overrides?.description || pageDesc,
     keywords: overrides?.keywords || pageKeywords,
     metadataBase: new URL(siteUrl),
+    applicationName: storeName,
+    appleWebApp: {
+      title: storeName,
+      statusBarStyle: "default",
+      capable: true,
+    },
     openGraph: {
       title: overrides?.title || titleStr,
       description: overrides?.description || pageDesc,

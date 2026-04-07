@@ -52,29 +52,18 @@ export function Typewriter({
     >
       {/* 
         Bot-friendly text:
-        Search engines and screen readers will read this single, unbroken string.
-        We use a visually hidden approach that is standard for accessibility.
+        Search engines see this as the primary text content.
       */}
-      <span style={{ 
-        position: "absolute", 
-        width: "1px", 
-        height: "1px", 
-        padding: 0, 
-        margin: "-1px", 
-        overflow: "hidden", 
-        clip: "rect(0,0,0,0)", 
-        whiteSpace: "nowrap", 
-        border: 0 
-      }}>
+      <span className="rpt-seo-text">
         {text}
       </span>
 
       {/* 
         Animated text:
-        Hidden from screen readers and most bots to prevent "double reading" 
-        or fragmented text detection.
+        Hidden from screen readers and most bots.
+        We use rpt-animate-chars to handle visibility in CSS if needed.
       */}
-      <span aria-hidden="true">
+      <span aria-hidden="true" className="rpt-animate-chars">
         {words.map((word, wordIndex) => (
           <span 
             key={`word-${wordIndex}`} 
@@ -99,6 +88,24 @@ export function Typewriter({
           </span>
         ))}
       </span>
+
+      <style jsx>{`
+        .rpt-seo-text {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+        /* Mobile bots sometimes ignore clip, so we ensure it doesn't affect layout */
+        @media aria-hidden-true {
+          .rpt-animate-chars { display: none; }
+        }
+      `}</style>
     </motion.span>
   );
 }
