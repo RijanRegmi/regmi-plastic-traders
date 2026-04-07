@@ -63,7 +63,7 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
 
   const titleStr = pageTitle 
     ? `${pageTitle} | ${storeName}` 
-    : `${storeName} | Nepal's Most Trusted Plastic Goods Store`;
+    : `${storeName} | Nepal's Most Trusted Plastic Store`;
 
   return {
     title: overrides?.title || titleStr,

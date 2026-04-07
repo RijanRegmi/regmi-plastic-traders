@@ -50,12 +50,30 @@ export function Typewriter({
       className={className}
       style={{ display: "inline" }}
     >
-      {/* Static text for SEO bots and screen readers */}
-      <span style={{ position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px", overflow: "hidden", clip: "rect(0,0,0,0)", border: 0 }}>
+      {/* 
+        Bot-friendly text:
+        Search engines and screen readers will read this single, unbroken string.
+        We use a visually hidden approach that is standard for accessibility.
+      */}
+      <span style={{ 
+        position: "absolute", 
+        width: "1px", 
+        height: "1px", 
+        padding: 0, 
+        margin: "-1px", 
+        overflow: "hidden", 
+        clip: "rect(0,0,0,0)", 
+        whiteSpace: "nowrap", 
+        border: 0 
+      }}>
         {text}
       </span>
 
-      {/* Animated text hidden from screen readers to prevent double reading */}
+      {/* 
+        Animated text:
+        Hidden from screen readers and most bots to prevent "double reading" 
+        or fragmented text detection.
+      */}
       <span aria-hidden="true">
         {words.map((word, wordIndex) => (
           <span 
