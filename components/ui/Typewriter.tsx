@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
+import { useState, useEffect } from "react";
 
 interface TypewriterProps {
   text: string;
@@ -15,6 +16,15 @@ export function Typewriter({
   delay = 0, 
   charDelay = 0.06 // Per your request to make it "a bit slow"
 }: TypewriterProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const container: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -37,10 +47,18 @@ export function Typewriter({
     },
   };
 
-  // Split text by words first to prevent words from breaking in the middle during layout
-  // (Standard practice for responsive character-level animations)
+  // Split text by words first
   const words = text.split(" ");
 
+  // ── SEO / BOT MODE ────────────────────────────────────────────────────────
+  // If we haven't reached the client yet (SSR), or if it's a simple bot,
+  // we ONLY render the clean, unbroken text.
+  if (!isMounted) {
+    return <span className={className}>{text}</span>;
+  }
+
+  // ── USER / ANIMATION MODE ──────────────────────────────────────────────────
+  // Now that we are on the client, we swap the text for the animation.
   return (
     <motion.span
       variants={container}
@@ -50,20 +68,7 @@ export function Typewriter({
       className={className}
       style={{ display: "inline" }}
     >
-      {/* 
-        Bot-friendly text:
-        Search engines see this as the primary text content.
-      */}
-      <span className="rpt-seo-text">
-        {text}
-      </span>
-
-      {/* 
-        Animated text:
-        Hidden from screen readers and most bots.
-        We use rpt-animate-chars to handle visibility in CSS if needed.
-      */}
-      <span aria-hidden="true" className="rpt-animate-chars">
+      <span aria-hidden="true">
         {words.map((word, wordIndex) => (
           <span 
             key={`word-${wordIndex}`} 
@@ -88,24 +93,24 @@ export function Typewriter({
           </span>
         ))}
       </span>
-
-      <style jsx>{`
-        .rpt-seo-text {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border: 0;
-        }
-        /* Mobile bots sometimes ignore clip, so we ensure it doesn't affect layout */
-        @media aria-hidden-true {
-          .rpt-animate-chars { display: none; }
-        }
-      `}</style>
+      
+      {/* 
+        Hidden static text for late-loading SEO scanners or screen readers,
+        though bots will primarily see the SSR output above.
+      */}
+      <span style={{ 
+        position: "absolute", 
+        width: "1px", 
+        height: "1px", 
+        padding: 0, 
+        margin: "-1px", 
+        overflow: "hidden", 
+        clip: "rect(0,0,0,0)", 
+        whiteSpace: "nowrap", 
+        border: 0 
+      }}>
+        {text}
+      </span>
     </motion.span>
   );
 }
