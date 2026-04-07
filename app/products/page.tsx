@@ -8,6 +8,9 @@ import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer"
 import Link from "next/link";
 import { generateDynamicMetadata } from "@/lib/seo";
 import { Metadata } from "next";
+import Image from "next/image";
+import rptIcon from "@/assets/icon/RPT.png";
+
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -55,6 +58,7 @@ async function getProductsData(searchParams: Record<string, string>) {
     };
   }
 }
+
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateDynamicMetadata("products");
@@ -112,12 +116,15 @@ export default async function ProductsPage({
 
       <main className="rpt-products-page">
         {/* ── Page header ── */}
-        <Reveal direction="down" className="rpt-products-page__head" style={{ textAlign: "center", marginBottom: 40 }}>
-          <p className="rpt-label">{pageLabel}</p>
-          <h1 className="rpt-products-page__title" style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 800, letterSpacing: "-0.02em" }}>
+        <Reveal direction="down" className="rpt-products-page__head" style={{ textAlign: "center", marginBottom: 16, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ marginBottom: 8 }}>
+             <Image src={rptIcon} alt="RPT Logo" width={56} height={56} priority style={{ borderRadius: "50%", background: "white", padding: 5, boxShadow: "0 2px 10px rgba(0,0,0,0.06)" }} />
+          </div>
+          <p className="rpt-label" style={{ marginBottom: 2, fontSize: "0.75rem" }}>{pageLabel}</p>
+          <h1 className="rpt-products-page__title" style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 800, letterSpacing: "-0.01em", lineHeight: 1.05 }}>
             {pageTitle}
           </h1>
-          <p className="rpt-products-page__sub" style={{ color: "#6b7280", marginTop: 8 }}>
+          <p className="rpt-products-page__sub" style={{ color: "#6b7280", marginTop: 2, fontSize: "0.9rem" }}>
             {pageSubtitle}
           </p>
         </Reveal>

@@ -2840,14 +2840,14 @@ html {
    PRODUCTS PAGE
 ═══════════════════════════════════════════════════════ */
 .rpt-products-page {
-  padding-top: 70px;
+  padding-top: 68px;
   min-height: 100vh;
   background: var(--dark);
 }
 
 .rpt-products-page__head {
   text-align: center;
-  padding: 40px 24px 24px;
+  padding: 18px 24px 10px;
   border-bottom: 1px solid var(--border);
   background: var(--dark);
 }
