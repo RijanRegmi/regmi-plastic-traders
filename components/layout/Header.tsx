@@ -120,7 +120,16 @@ export default function Header({
                 }}
               />
             ) : (
-              logoLetter
+              <img
+                src="/RPT.png"
+                alt={storeName}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
             )}
           </div>
           <div style={{ minWidth: 0 }}>

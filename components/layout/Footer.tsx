@@ -181,18 +181,16 @@ export default function Footer({ cms }: FooterProps) {
                     }}
                   />
                 ) : (
-                  <span
+                  <img
+                    src="/RPT.png"
+                    alt={storeName}
                     style={{
-                      fontFamily:
-                        "var(--font-display,'Plus Jakarta Sans',sans-serif)",
-                      fontWeight: 800,
-                      fontSize: "28px",
-                      color: "#c0392b",
-                      lineHeight: 1,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      display: "block",
                     }}
-                  >
-                    {logoLetter}
-                  </span>
+                  />
                 )}
               </div>
 
