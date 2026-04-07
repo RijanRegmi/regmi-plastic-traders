@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -18,6 +19,8 @@ import {
   FiChevronRight,
   FiMail,
   FiUsers,
+  FiPhone,
+  FiSearch,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
 import toast from "react-hot-toast";
@@ -50,10 +53,13 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "Content",
     items: [
-      { href: "/admin/cms/home", label: "Home Page", icon: FiEdit3 },
-      { href: "/admin/cms/products", label: "Products Page", icon: FiPackage },
-      { href: "/admin/cms/about", label: "About Page", icon: FiFileText },
-      { href: "/admin/cms/global", label: "Global Settings", icon: FiSettings },
+      { href: "/admin/cms/home",     label: "Home Page",       icon: FiEdit3,    exact: true },
+      { href: "/admin/cms/products", label: "Products Page",   icon: FiPackage,  exact: true },
+      { href: "/admin/cms/about",    label: "About Page",      icon: FiFileText, exact: true },
+      { href: "/admin/cms/contact",  label: "Contact Page",    icon: FiPhone,    exact: true },
+      { href: "/admin/cms/blog",     label: "Blog Page",       icon: FiMessageSquare, exact: true },
+      { href: "/admin/cms/seo",      label: "SEO Settings",    icon: FiSearch,   exact: true },
+      { href: "/admin/cms/global",   label: "Global Settings", icon: FiSettings, exact: true },
     ],
   },
 ];
@@ -161,20 +167,18 @@ export default function AdminLayout({
             style={{
               width: 38,
               height: 38,
-              background: "linear-gradient(135deg,#c0392b,#e74c3c)",
               borderRadius: 12,
+              overflow: "hidden",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontFamily: F.display,
-              fontWeight: 700,
-              fontSize: 20,
-              color: "white",
-              boxShadow: "0 4px 16px rgba(192,57,43,0.4)",
               flexShrink: 0,
+              background: "rgba(192,57,43,0.08)",
+              border: "1px solid rgba(192,57,43,0.2)",
+              boxShadow: "0 4px 16px rgba(192,57,43,0.25)",
             }}
           >
-            R
+            <Image src="/RPT.png" alt="Regmi Plastic Traders Logo" width={38} height={38} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
           </div>
           <div>
             <div
@@ -380,7 +384,7 @@ export default function AdminLayout({
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh",
+          height: "100vh",
           minWidth: 0,
         }}
         className="admin-main-lg"
@@ -403,6 +407,7 @@ export default function AdminLayout({
         >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <button
+              className="admin-mobile-menu-btn"
               onClick={() => setOpen(!open)}
               style={{
                 display: "flex",
@@ -462,7 +467,7 @@ export default function AdminLayout({
           </Link>
         </header>
 
-        <main style={{ flex: 1, padding: "28px 32px", overflowY: "auto" }}>
+        <main className="admin-main-content" style={{ flex: 1, padding: "28px 32px", overflowY: "auto" }}>
           {children}
         </main>
       </div>
@@ -472,6 +477,10 @@ export default function AdminLayout({
         @media(min-width:1024px){
           .admin-sidebar-lg{ transform:translateX(0)!important; position:sticky!important; height:100vh; }
           .admin-main-lg{ margin-left:0; }
+          .admin-mobile-menu-btn{ display:none!important; }
+        }
+        @media(max-width:640px){
+          .admin-main-content{ padding: 16px !important; }
         }
       `}</style>
       </div>

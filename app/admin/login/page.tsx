@@ -1,5 +1,6 @@
 "use client";
 import { useState, Suspense } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { authApi } from "@/lib/api";
@@ -133,22 +134,28 @@ function AdminLoginForm() {
           <div style={{ textAlign: "center", marginBottom: 34 }}>
             <div
               style={{
-                width: 60,
-                height: 60,
-                background: "linear-gradient(135deg, #c0392b, #e74c3c)",
-                borderRadius: 18,
+                width: 72,
+                height: 72,
+                borderRadius: 20,
+                overflow: "hidden",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 margin: "0 auto 16px",
-                fontSize: 26,
-                fontWeight: 700,
-                color: "white",
-                boxShadow: "0 8px 32px rgba(192,57,43,0.45)",
-                fontFamily: F.display,
+                background: "rgba(192,57,43,0.08)",
+                border: "1px solid rgba(192,57,43,0.2)",
+                boxShadow: "0 8px 32px rgba(192,57,43,0.35)",
+                padding: 6,
               }}
             >
-              R
+              <Image
+                src="/RPT.png"
+                alt="Regmi Plastic Traders Logo"
+                width={60}
+                height={60}
+                style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                priority
+              />
             </div>
             <h1
               style={{

@@ -3662,7 +3662,7 @@ html {
 @media (max-width: 480px) {
   .rpt-product-detail__ctas {
     flex-direction: column;
-    width: 85%;
+    width: 100%;
   }
 
   .rpt-product-detail__ctas>* {
@@ -3911,11 +3911,15 @@ html {
 
 .rpt-gallery__thumbs {
   display: flex;
+  flex-wrap: nowrap;
   gap: 10px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 2px;
+  padding-bottom: 8px;
+  margin-bottom: -6px;
 }
 
 .rpt-gallery__thumbs::-webkit-scrollbar {
@@ -3933,6 +3937,7 @@ html {
   background: none;
   padding: 0;
   transition: border-color 0.2s, transform 0.2s;
+  scroll-snap-align: start;
 }
 
 .rpt-gallery__thumb:hover {
@@ -5251,11 +5256,11 @@ html {
   }
 
   .rpt-product-detail__meta-table{
-    width: 90%;
+    width: 100%;
   }
 
   .rpt-gallery__main {
-    width: 90% !important;
+    width: 100% !important;
     height: 100%;
     margin: 0 0 12px;
     aspect-ratio: 1 / 1;
@@ -5290,7 +5295,7 @@ html {
   /* 7. Product info refinements for small screens */
   .rpt-product-detail__name {
     font-size: clamp(20px, 5vw, 32px);
-    width: 80%;
+    width: 100%;
   }
 
   .rpt-product-detail__price {

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef, ReactNode } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { cmsApi, uploadApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -20,7 +20,7 @@ import {
   FiX,
   FiImage,
   FiFileText,
-  FiUsers,
+  FiSearch,
 } from "react-icons/fi";
 import { C, F } from "@/components/admin/adminUI";
 
@@ -125,7 +125,7 @@ function HeroBgUploadField({
   const previewUrl = getImageUrl(preview);
 
   return (
-    <div style={{ gridColumn: "span 2", display: "flex", flexDirection: "column", gap: 10 }}>
+    <div className="cms-span-full" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <label style={{ fontFamily: F.ui, fontSize: 9, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.16em", color: C.text4 }}>
         Hero Background Photo
       </label>
@@ -202,7 +202,7 @@ function LogoUploadField({ currentUrl, onUploaded }: { currentUrl: string; onUpl
   const handleClear = () => { setPreview(""); onUploaded(""); };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, gridColumn: "span 2" }}>
+    <div className="cms-span-full" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       <label style={{ fontFamily: F.ui, fontSize: 9, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.16em", color: C.text4 }}>Store Logo Image</label>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ width: 72, height: 72, borderRadius: 14, border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0, position: "relative" }}>
@@ -554,6 +554,140 @@ const PAGES: Record<string, PageDef> = {
       },
     ],
   },
+
+  // ─── SEO PAGE ─────────────────────────────────────────────────────────────────
+  seo: {
+    title: "SEO Settings",
+    icon: <FiSearch size={16} />,
+    sections: [
+      {
+        id: "seo-global",
+        title: "Global / Default SEO",
+        icon: <FiGlobe size={14} />,
+        description: "Fallback meta tags used on any page that doesn't have its own specific SEO data set below.",
+        fields: [
+          { key: "globalSiteTitle", label: "Default Site Title", type: "text", placeholder: "Regmi Plastic Traders — Nepal's Trusted Plastic Store", span: "full", hint: "Used as <title> when no page-specific title is set. Keep under 60 characters." },
+          { key: "globalTitleSuffix", label: "Title Suffix / Brand", type: "text", placeholder: "| Regmi Plastic Traders", span: "half", hint: "Appended to every page title, e.g. 'Home | Regmi Plastic Traders'" },
+          { key: "globalMetaDescription", label: "Default Meta Description", type: "textarea", placeholder: "Regmi Plastic Traders is Nepal's most trusted plastic goods store, offering 500+ quality products across Kathmandu and nationwide.", span: "full", hint: "Keep between 120–160 characters for best search engine results." },
+          { key: "globalMetaKeywords", label: "Global Meta Keywords", type: "textarea", placeholder: "plastic store nepal, plastic products kathmandu, regmi plastic, buy plastic goods nepal", span: "full", hint: "Comma-separated keywords (limited SEO impact on Google, still used by some engines)." },
+          { key: "globalCanonicalBase", label: "Site Canonical Base URL", type: "url", placeholder: "https://regmiplastictraders.com.np", span: "half", hint: "The root URL of your site, no trailing slash. Used to construct canonical links." },
+          { key: "globalRobots", label: "Global Robots Directive", type: "text", placeholder: "index, follow", span: "half", hint: "Controls how crawlers index your site. Typical: 'index, follow'" },
+        ],
+      },
+      {
+        id: "seo-og",
+        title: "Open Graph (Social Sharing)",
+        icon: <FiGlobe size={14} />,
+        description: "Controls how your pages appear when shared on Facebook, LinkedIn, and other Open Graph-compatible platforms.",
+        fields: [
+          { key: "ogSiteName", label: "OG Site Name", type: "text", placeholder: "Regmi Plastic Traders", span: "half" },
+          { key: "ogType", label: "OG Type", type: "text", placeholder: "website", span: "half", hint: "Usually 'website' for homepages, 'article' for blog posts." },
+          { key: "ogImage", label: "Default OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-image.jpg", span: "full", hint: "Recommended size: 1200×630px. Used when sharing any page that has no specific OG image." },
+          { key: "ogImageAlt", label: "OG Image Alt Text", type: "text", placeholder: "Regmi Plastic Traders — Quality Plastic Products Nepal", span: "full" },
+          { key: "ogLocale", label: "OG Locale", type: "text", placeholder: "en_US", span: "half" },
+          { key: "ogTwitterCard", label: "Twitter Card Type", type: "text", placeholder: "summary_large_image", span: "half", hint: "Options: summary, summary_large_image" },
+          { key: "ogTwitterSite", label: "Twitter / X Handle", type: "text", placeholder: "@regmiplastic", span: "half" },
+          { key: "ogTwitterCreator", label: "Twitter Creator Handle", type: "text", placeholder: "@regmiplastic", span: "half" },
+        ],
+      },
+      {
+        id: "seo-home",
+        title: "Home Page SEO",
+        icon: <FiHome size={14} />,
+        description: "Meta tags specifically for the homepage (/).",
+        fields: [
+          { key: "homeMetaTitle", label: "Page Title", type: "text", placeholder: "Regmi Plastic Traders — Nepal's Most Trusted Plastic Store", span: "full", hint: "Ideal: 50–60 chars. Shows in browser tab and Google search results." },
+          { key: "homeMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Shop 500+ quality plastic products at Regmi Plastic Traders. Serving Kathmandu and all of Nepal since 2005. Free delivery available.", span: "full", hint: "Ideal: 120–160 chars." },
+          { key: "homeMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "plastic store kathmandu, buy plastic products nepal, household plastic goods", span: "full" },
+          { key: "homeOgTitle", label: "OG Title", type: "text", placeholder: "Regmi Plastic Traders — Nepal's Most Trusted Plastic Store", span: "full" },
+          { key: "homeOgDescription", label: "OG Description", type: "textarea", placeholder: "Quality plastic products delivered across Nepal. Visit Regmi Plastic Traders.", span: "full" },
+          { key: "homeOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-home.jpg", span: "half" },
+          { key: "homeCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/", span: "half" },
+          { key: "homeSchemaType", label: "Schema.org Type", type: "text", placeholder: "LocalBusiness", span: "half", hint: "JSON-LD type, e.g. LocalBusiness, Store, Organization" },
+          { key: "homeSchemaJson", label: "JSON-LD Structured Data (raw)", type: "textarea", placeholder: '{"@context":"https://schema.org","@type":"LocalBusiness","name":"Regmi Plastic Traders",...}', span: "full", hint: "Optional: paste full JSON-LD script content. Validates at schema.org/validator" },
+        ],
+      },
+      {
+        id: "seo-products",
+        title: "Products Page SEO",
+        icon: <FiPackage size={14} />,
+        description: "Meta tags for the /products listing page.",
+        fields: [
+          { key: "productsMetaTitle", label: "Page Title", type: "text", placeholder: "Shop Plastic Products — Regmi Plastic Traders Nepal", span: "full", hint: "50–60 chars recommended." },
+          { key: "productsMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Browse 500+ quality plastic products — buckets, containers, household goods and more. Delivered across Nepal.", span: "full", hint: "120–160 chars recommended." },
+          { key: "productsMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "plastic products nepal, buy plastic online nepal, plastic buckets containers nepal", span: "full" },
+          { key: "productsOgTitle", label: "OG Title", type: "text", placeholder: "Shop Plastic Products — Regmi Plastic Traders", span: "full" },
+          { key: "productsOgDescription", label: "OG Description", type: "textarea", placeholder: "500+ plastic products available online. Affordable prices, fast delivery.", span: "full" },
+          { key: "productsOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-products.jpg", span: "half" },
+          { key: "productsCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/products", span: "half" },
+          { key: "productsSitemapPriority", label: "Sitemap Priority", type: "text", placeholder: "0.9", span: "half", hint: "0.0 to 1.0. Higher = more frequently crawled." },
+          { key: "productsSitemapChangefreq", label: "Sitemap Change Frequency", type: "text", placeholder: "weekly", span: "half", hint: "always, hourly, daily, weekly, monthly, yearly, never" },
+        ],
+      },
+      {
+        id: "seo-about",
+        title: "About Page SEO",
+        icon: <FiInfo size={14} />,
+        description: "Meta tags for the /about page.",
+        fields: [
+          { key: "aboutMetaTitle", label: "Page Title", type: "text", placeholder: "About Us — Regmi Plastic Traders | Est. 2005, Nepal", span: "full" },
+          { key: "aboutMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Learn about Regmi Plastic Traders — Nepal's trusted plastic goods store since 2005. Our story, mission, and values.", span: "full" },
+          { key: "aboutMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "about regmi plastic traders, nepal plastic store history, trusted plastic supplier nepal", span: "full" },
+          { key: "aboutOgTitle", label: "OG Title", type: "text", placeholder: "About Regmi Plastic Traders — Our Story Since 2005", span: "full" },
+          { key: "aboutOgDescription", label: "OG Description", type: "textarea", placeholder: "19+ years serving Nepal with quality plastic products. Discover our story.", span: "full" },
+          { key: "aboutOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-about.jpg", span: "half" },
+          { key: "aboutCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/about", span: "half" },
+        ],
+      },
+      {
+        id: "seo-contact",
+        title: "Contact Page SEO",
+        icon: <FiPhone size={14} />,
+        description: "Meta tags for the /contact page.",
+        fields: [
+          { key: "contactMetaTitle", label: "Page Title", type: "text", placeholder: "Contact Us — Regmi Plastic Traders Kathmandu Nepal", span: "full" },
+          { key: "contactMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Get in touch with Regmi Plastic Traders. Call, email or visit our store in Kathmandu, Nepal. We'd love to hear from you.", span: "full" },
+          { key: "contactMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "contact regmi plastic traders, plastic store kathmandu address, plastic shop nepal phone", span: "full" },
+          { key: "contactOgTitle", label: "OG Title", type: "text", placeholder: "Contact Regmi Plastic Traders — Get In Touch", span: "full" },
+          { key: "contactOgDescription", label: "OG Description", type: "textarea", placeholder: "Reach out to Nepal's trusted plastic store. Phone, email or visit us.", span: "full" },
+          { key: "contactOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-contact.jpg", span: "half" },
+          { key: "contactCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/contact", span: "half" },
+        ],
+      },
+      {
+        id: "seo-blog",
+        title: "Blog Page SEO",
+        icon: <FiFileText size={14} />,
+        description: "Meta tags for the /blog listing page. (Individual blog posts use their own CMS-controlled titles.)",
+        fields: [
+          { key: "blogMetaTitle", label: "Page Title", type: "text", placeholder: "Blog — Regmi Plastic Traders | Plastic Tips & News Nepal", span: "full" },
+          { key: "blogMetaDescription", label: "Meta Description", type: "textarea", placeholder: "Read guides, tips, and news from Regmi Plastic Traders — Nepal's leading plastic goods store.", span: "full" },
+          { key: "blogMetaKeywords", label: "Meta Keywords", type: "textarea", placeholder: "plastic goods blog nepal, plastic tips guide, regmi plastic news", span: "full" },
+          { key: "blogOgTitle", label: "OG Title", type: "text", placeholder: "Regmi Plastic Traders Blog — Tips & Updates from Nepal", span: "full" },
+          { key: "blogOgDescription", label: "OG Description", type: "textarea", placeholder: "Helpful guides and updates about plastic products from Nepal's trusted store.", span: "full" },
+          { key: "blogOgImage", label: "OG Image URL", type: "url", placeholder: "https://regmiplastictraders.com.np/og-blog.jpg", span: "half" },
+          { key: "blogCanonical", label: "Canonical URL", type: "url", placeholder: "https://regmiplastictraders.com.np/blog", span: "half" },
+          { key: "blogSitemapPriority", label: "Sitemap Priority", type: "text", placeholder: "0.7", span: "half" },
+          { key: "blogSitemapChangefreq", label: "Sitemap Change Frequency", type: "text", placeholder: "weekly", span: "half" },
+        ],
+      },
+      {
+        id: "seo-advanced",
+        title: "Advanced & Technical SEO",
+        icon: <FiSettings size={14} />,
+        description: "Verification codes, analytics IDs, and extra technical directives.",
+        fields: [
+          { key: "googleVerification", label: "Google Search Console Verification", type: "text", placeholder: "abcdef1234567890", span: "full", hint: "The 'content' value from the <meta name=\"google-site-verification\"> tag." },
+          { key: "bingVerification", label: "Bing Webmaster Verification", type: "text", placeholder: "XXXXXXXXXXXXXXXX", span: "half" },
+          { key: "googleAnalyticsId", label: "Google Analytics / GA4 ID", type: "text", placeholder: "G-XXXXXXXXXX", span: "half", hint: "Your GA4 Measurement ID." },
+          { key: "googleTagManagerId", label: "Google Tag Manager ID", type: "text", placeholder: "GTM-XXXXXXX", span: "half" },
+          { key: "facebookPixelId", label: "Facebook Pixel ID", type: "text", placeholder: "123456789012345", span: "half" },
+          { key: "sitemapUrl", label: "Sitemap URL", type: "url", placeholder: "https://regmiplastictraders.com.np/sitemap.xml", span: "half", hint: "Submit this URL to Google Search Console." },
+          { key: "robotsTxtExtra", label: "robots.txt Extra Directives", type: "textarea", placeholder: "Disallow: /admin/\nDisallow: /api/", span: "full", hint: "Additional lines to include in your robots.txt file." },
+        ],
+      },
+    ],
+  },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -580,8 +714,9 @@ const IB = {
   transition: "border-color 0.2s, box-shadow 0.2s",
 };
 const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = "rgba(192,57,43,0.55)";
-  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(192,57,43,0.10)";
+  // Use a subtle neutral focus style instead of the brand red.
+  e.currentTarget.style.borderColor = C.border;
+  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0,0,0,0.08)";
 };
 const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
   e.currentTarget.style.borderColor = C.border;
@@ -592,7 +727,7 @@ const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => 
 function Field({ def, value, onChange }: { def: FieldDef; value: string; onChange: (v: string) => void }) {
   const isArea = def.type === "textarea";
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6, gridColumn: def.span === "full" ? "span 2" : "span 1" }}>
+    <div className={`cms-field${def.span === "full" ? " cms-field-full" : " cms-field-half"}`} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <label style={{ fontFamily: F.ui, fontSize: 9, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.16em", color: C.text4 }}>
         {def.label}
       </label>
@@ -626,6 +761,7 @@ function Section({ section, values, onChange, onBgUploaded, onLogoUploaded, acti
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        className="cms-section-btn"
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "15px 22px", background: "none", border: "none", cursor: "pointer", borderBottom: open ? `1px solid ${C.border}` : "none" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -652,7 +788,7 @@ function Section({ section, values, onChange, onBgUploaded, onLogoUploaded, acti
       </button>
 
       {open && (
-        <div style={{ padding: "20px 22px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div className="cms-section-grid" style={{ padding: "20px 22px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {["home", "about", "blog"].includes(activePage) && section.id === "hero" && onBgUploaded && (
             <HeroBgUploadField
               activePage={activePage}
@@ -683,36 +819,19 @@ function Section({ section, values, onChange, onBgUploaded, onLogoUploaded, acti
   );
 }
 
-// ─── Tab ──────────────────────────────────────────────────────────────────────
-function Tab({ id, cfg, active, onClick }: { id: string; cfg: PageDef; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer", background: active ? C.red : "transparent", color: active ? "white" : C.text3, fontFamily: F.ui, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" as const, transition: "background 0.2s, color 0.2s" }}
-      onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = C.surface; e.currentTarget.style.color = C.text1; } }}
-      onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.text3; } }}
-    >
-      {cfg.icon}
-      {cfg.title}
-    </button>
-  );
-}
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function CmsEditorPage() {
   const params = useParams();
-  const router = useRouter();
   const urlPage = (params?.page as string) || "global";
 
-  const [activePage, setActivePage] = useState<string>(urlPage);
+  const [activePage] = useState<string>(urlPage);
   const [allData, setAllData] = useState<Record<string, Record<string, string>>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+
   }, []);
 
   const pageConfig: PageDef = PAGES[activePage] || PAGES.global;
@@ -727,7 +846,8 @@ export default function CmsEditorPage() {
         page === "home" ? ["heroBgImage"] :
           page === "about" ? ["aboutBgImage"] :
             page === "blog" ? ["blogBgImage"] :
-              page === "global" ? ["logoUrl"] : [];
+              page === "global" ? ["logoUrl"] :
+                page === "seo" ? [] : [];
       const mapped: Record<string, string> = {};
       [...declaredKeys, ...extraKeys].forEach((key) => { mapped[key] = unwrap(data[key]); });
       setAllData((prev) => ({ ...prev, [page]: mapped }));
@@ -773,76 +893,40 @@ export default function CmsEditorPage() {
     }
   };
 
-  const switchPage = (id: string) => {
-    if (dirty && !confirm("You have unsaved changes. Switch anyway?")) return;
-    setActivePage(id);
-    setDirty(false);
-  };
-
   const totalFields = pageConfig.sections.reduce((a, s) => a + s.fields.length, 0);
   const filledFields = pageConfig.sections.reduce((a, s) => a + s.fields.filter((f) => values[f.key]?.trim()).length, 0);
   const pct = totalFields ? Math.round((filledFields / totalFields) * 100) : 0;
 
   return (
-    <div style={{ fontFamily: F.body }}>
-      {/* ── Sticky header ── */}
-      <div style={{ position: "sticky", top: 60, zIndex: 20, background: C.bg2, borderBottom: `1px solid ${C.border}`, marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "14px 0 10px", flexWrap: "wrap" as const }}>
-          <div>
-            <h1 style={{ fontFamily: F.display, fontSize: 26, fontWeight: 700, color: C.text1, letterSpacing: "-0.02em", margin: "0 0 3px" }}>Site Content Editor</h1>
-            <p style={{ fontFamily: F.body, fontSize: 12, color: C.text4, margin: 0 }}>Edit every word and image from header to footer — changes go live immediately.</p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            {dirty && (
-              <span style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: F.body, fontSize: 12, color: C.yellow }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.yellow, display: "inline-block", animation: "pulse 1.5s ease-in-out infinite" }} />
-                Unsaved changes
-              </span>
-            )}
-            <button
-              onClick={handleSave}
-              disabled={saving || !dirty}
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 22px", background: saving ? "rgba(192,57,43,0.4)" : !dirty ? "rgba(255,255,255,0.05)" : "linear-gradient(135deg,#c0392b,#e74c3c)", border: `1px solid ${!dirty ? C.border : "transparent"}`, borderRadius: 12, color: !dirty ? C.text4 : "white", fontFamily: F.ui, fontSize: 13, fontWeight: 700, cursor: saving || !dirty ? "not-allowed" : "pointer", boxShadow: dirty ? "0 6px 20px rgba(192,57,43,0.30)" : "none" }}
-            >
-              {saving ? <FiRefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} /> : <FiSave size={14} />}
-              {saving ? "Saving…" : dirty ? "Save Changes" : "Saved ✓"}
-            </button>
-          </div>
+    <div className="cms-root" style={{ fontFamily: F.body, margin: "-28px -32px 0", padding: "0 32px" }}>
+      {/* ── Title bar (scrolls away) ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 0 12px", flexWrap: "wrap" as const }}>
+        <div>
+          <h1 style={{ fontFamily: F.display, fontSize: 26, fontWeight: 700, color: C.text1, letterSpacing: "-0.02em", margin: "0 0 3px" }}>Site Content Editor</h1>
+          <p style={{ fontFamily: F.body, fontSize: 12, color: C.text4, margin: 0 }}>Edit every word and image from header to footer — changes go live immediately.</p>
         </div>
-        <div style={{ display: "flex", gap: 4, paddingBottom: 12, overflowX: "auto" as const }}>
-          {Object.entries(PAGES).map(([id, cfg]) => (
-            <Tab key={id} id={id} cfg={cfg} active={activePage === id} onClick={() => switchPage(id)} />
-          ))}
-          {mounted && (() => {
-            try {
-              const auth = JSON.parse(localStorage.getItem('rpt-admin-auth') || '{}') as {
-                state?: { user?: { role?: string } }
-              };
-              return auth?.state?.user?.role === 'admin';
-            } catch {
-              return false;
-            }
-          })() && (
-            <>
-              <div style={{ width: 1, height: 24, background: C.border, margin: "0 8px" }} />
-              <button
-                onClick={() => router.push("/admin/users")}
-                style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer", background: "transparent", color: C.text3, fontFamily: F.ui, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" as const }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = C.surface; e.currentTarget.style.color = C.text1; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.text3; }}
-              >
-                <FiUsers size={16} />
-                Users
-              </button>
-            </>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {dirty && (
+            <span style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: F.body, fontSize: 12, color: C.yellow }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.yellow, display: "inline-block", animation: "pulse 1.5s ease-in-out infinite" }} />
+              Unsaved changes
+            </span>
           )}
+          <button
+            onClick={handleSave}
+            disabled={saving || !dirty}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 22px", background: saving ? "rgba(192,57,43,0.4)" : !dirty ? "rgba(255,255,255,0.05)" : "linear-gradient(135deg,#c0392b,#e74c3c)", border: `1px solid ${!dirty ? C.border : "transparent"}`, borderRadius: 12, color: !dirty ? C.text4 : "white", fontFamily: F.ui, fontSize: 13, fontWeight: 700, cursor: saving || !dirty ? "not-allowed" : "pointer", boxShadow: dirty ? "0 6px 20px rgba(192,57,43,0.30)" : "none" }}
+          >
+            {saving ? <FiRefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} /> : <FiSave size={14} />}
+            {saving ? "Saving…" : dirty ? "Save Changes" : "Saved ✓"}
+          </button>
         </div>
       </div>
 
       {/* ── Page meta bar ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 20, flexWrap: "wrap" as const }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(192,57,43,0.12)", color: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(255,255,255,0.06)", color: C.text1, display: "flex", alignItems: "center", justifyContent: "center" }}>
             {pageConfig.icon}
           </div>
           <div>
@@ -852,7 +936,7 @@ export default function CmsEditorPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 120, height: 4, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${pct}%`, background: pct === 100 ? C.green : C.red, borderRadius: 99, transition: "width 0.4s" }} />
+            <div style={{ height: "100%", width: `${pct}%`, background: pct === 100 ? C.green : C.text1, borderRadius: 99, transition: "width 0.4s" }} />
           </div>
           <span style={{ fontFamily: F.body, fontSize: 12, color: C.text4 }}>{filledFields}/{totalFields} fields filled</span>
         </div>
@@ -861,7 +945,7 @@ export default function CmsEditorPage() {
       {/* ── Sections ── */}
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px", gap: 16 }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", border: `3px solid ${C.border}`, borderTopColor: C.red, animation: "spin 0.8s linear infinite" }} />
+          <div style={{ width: 36, height: 36, borderRadius: "50%", border: `3px solid ${C.border}`, borderTopColor: C.text1, animation: "spin 0.8s linear infinite" }} />
           <p style={{ fontFamily: F.body, fontSize: 14, color: C.text4 }}>Loading content…</p>
         </div>
       ) : (
@@ -903,6 +987,37 @@ export default function CmsEditorPage() {
       <style>{`
         @keyframes spin  { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+
+        /* ── Field grid column (desktop) ── */
+        .cms-field-full  { grid-column: span 2; }
+        .cms-field-half  { grid-column: span 1; }
+        .cms-span-full   { grid-column: span 2; }
+
+
+        /* ── Mobile responsive ── */
+        @media (max-width: 640px) {
+          /* Single-column form grid on mobile */
+          .cms-section-grid {
+            grid-template-columns: 1fr !important;
+            padding: 16px !important;
+            gap: 12px !important;
+          }
+          /* All fields go full width on mobile */
+          .cms-field-half,
+          .cms-field-full,
+          .cms-span-full {
+            grid-column: span 1 !important;
+          }
+          /* Section header button compact */
+          .cms-section-btn {
+            padding: 13px 16px !important;
+          }
+          /* Fix negative-margin for mobile main padding */
+          .cms-root {
+            margin: -16px -16px 0 !important;
+            padding: 0 16px !important;
+          }
+        }
       `}</style>
     </div>
   );
