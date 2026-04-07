@@ -54,6 +54,12 @@ function arr<T>(raw: unknown, fallback: T[]): T[] {
 
 export const dynamic = "force-dynamic";
 
+import { generateDynamicMetadata } from "@/lib/seo";
+import { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("home");
+}
 async function getHomeData() {
   try {
     const [cmsRes, featuredRes, reviewsRes, globalRes, blogRes, blogCmsRes] =

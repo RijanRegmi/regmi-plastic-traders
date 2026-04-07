@@ -4,6 +4,8 @@ import { FiPhone, FiMail, FiMapPin, FiClock } from "react-icons/fi";
 import Reveal from "@/components/ui/Reveal";
 import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 import ContactForm from "@/components/ui/ContactForm";
+import { generateDynamicMetadata } from "@/lib/seo";
+import { Metadata } from "next";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -15,13 +17,10 @@ function unwrap(v: unknown, fallback = ""): string {
   return typeof v === "string" && v ? v : fallback;
 }
 
-const API_BASE = API.replace(/\/api$/, "");
-const getImageUrl = (path?: string) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("regmi-plastic/")) return `https://res.cloudinary.com/dkmbfnuch/image/upload/${path}`;
-  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
-};
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("contact");
+}
 
 async function getData() {
   try {
@@ -91,14 +90,13 @@ export default async function ContactPage() {
 
   const mapEmbed = toEmbedUrl(rawMap);
   const storeName = unwrap(cms.storeName, "Regmi Plastic Traders");
+  const formTitle = unwrap(cms.formTitle, "Send a Message");
+
   const pageLabel = unwrap(cms.pageLabel, "Get in Touch");
   const pageTitle = unwrap(cms.pageTitle, "Contact Us");
   const pageSubtitle = unwrap(cms.pageSubtitle, "We'd love to hear from you");
-  const formTitle = unwrap(cms.formTitle, "Send a Message");
 
   // Title Splitting Logic:
-  // If user types "Part 1 | Part 2" in CMS, Part 2 will be hollow.
-  // Default "Contact Us" is automatically split to "We are here | to help you".
   let titleMain = pageTitle;
   let titleOutline = "";
 
@@ -118,46 +116,54 @@ export default async function ContactPage() {
     { icon: FiClock, label: "Business Hours", value: hours, href: "#" },
   ];
 
-  const contactBgPath = unwrap(cms.contactBgImage, "");
-  const contactBgUrl = getImageUrl(contactBgPath);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "mainEntity": {
+      "@type": "LocalBusiness",
+      "name": storeName,
+      "telephone": phone,
+      "email": email,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": address
+      }
+    }
+  };
 
   return (
     <div className="rpt-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header storeName={storeName} cms={cms} />
-
-      {/* ── Page Hero ── */}
-      <div className="rpt-page-hero">
-        <div className="rpt-page-hero__bg">
-          {contactBgUrl && (
-            <img
-              src={contactBgUrl}
-              alt="Contact Banner"
-              className="rpt-page-hero__bg-img"
-            />
-          )}
-        </div>
-        <Reveal direction="up" className="rpt-page-hero__content">
-          <p className="rpt-label">{pageLabel}</p>
-          <h1 className="rpt-page-hero__title">
-            {titleMain}
-            {titleOutline && (
-              <span className="rpt-text-outline"> {titleOutline}</span>
-            )}
-          </h1>
-          <p className="rpt-page-hero__sub">{pageSubtitle}</p>
-        </Reveal>
-      </div>
 
       <main className="rpt-page-body" style={{ background: "white" }}>
         {/* ── Contact grid ── */}
-        <section className="rpt-section" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
+        <section className="rpt-section" style={{ paddingTop: "140px", paddingBottom: "80px", background: "transparent" }}>
           <div className="rpt-container">
+            
+            <Reveal direction="up" style={{ marginBottom: "50px" }}>
+              <p className="rpt-label" style={{ color: "var(--red)" }}>{pageLabel}</p>
+              <h1 className="rpt-heading" style={{ fontSize: "clamp(32px, 5vw, 48px)" }}>
+                {titleMain}
+                {titleOutline && (
+                  <span style={{ color: "var(--red)", fontWeight: "bold", marginLeft: "12px", fontStyle: "italic" }}>{titleOutline}</span>
+                )}
+              </h1>
+              <p className="rpt-body" style={{ marginTop: "16px", fontSize: "16px", color: "var(--text-3)" }}>
+                {pageSubtitle}
+              </p>
+            </Reveal>
 
             <div className="rpt-contact-grid">
 
               {/* Left — info */}
               <Reveal direction="right">
-                <p className="rpt-label">Reach Us</p>
+                <p className="rpt-label">
+                  Reach Us
+                </p>
                 <h2 className="rpt-heading">
                   Let&apos;s <span className="rpt-heading--yellow">Connect</span>
                 </h2>

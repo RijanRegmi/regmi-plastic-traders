@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { messageApi } from "@/lib/api";
+import { FiSend } from "react-icons/fi";
 
 export default function ContactForm({ cms }: { cms?: unknown }) {
   const [formData, setFormData] = useState({ name: "", contact: "", message: "" });
@@ -70,7 +71,12 @@ export default function ContactForm({ cms }: { cms?: unknown }) {
             <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
             Sending...
           </>
-        ) : "Send Message"}
+        ) : (
+          <>
+            <FiSend size={18} />
+            Send Message
+          </>
+        )}
       </button>
     </form>
   );

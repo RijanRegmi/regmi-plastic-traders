@@ -6,6 +6,8 @@ import { Product } from "@/types";
 import Reveal from "@/components/ui/Reveal";
 import StaggerContainer, { StaggerItem } from "@/components/ui/StaggerContainer";
 import Link from "next/link";
+import { generateDynamicMetadata } from "@/lib/seo";
+import { Metadata } from "next";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
 
@@ -54,6 +56,10 @@ async function getProductsData(searchParams: Record<string, string>) {
   }
 }
 
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("products");
+}
+
 function unwrap(v: unknown, fallback = ""): string {
   if (v && typeof v === "object" && !Array.isArray(v)) {
     const o = v as Record<string, unknown>;
@@ -81,8 +87,27 @@ export default async function ProductsPage({
   const totalProducts = products.pagination?.total || 0;
   const shownProducts = products.data?.length || 0;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": pageTitle,
+    "description": pageSubtitle,
+    "url": "https://www.regmiplastictraders.com.np/products",
+    "hasPart": products.data.map((p: Product) => ({
+      "@type": "Product",
+      "name": p.name,
+      "description": p.description,
+      "image": p.images?.[0] || "",
+      "url": `https://www.regmiplastictraders.com.np/products/${p.slug}`
+    }))
+  };
+
   return (
     <div className="rpt-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header storeName={storeName} />
 
       <main className="rpt-products-page">
