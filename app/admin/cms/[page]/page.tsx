@@ -581,8 +581,9 @@ const PAGES: Record<string, PageDef> = {
         icon: <FiPhone size={14} />,
         description: "These details are used specifically for Google's Knowledge Graph and local search snippets (JSON-LD).",
         fields: [
-          { key: "seoStoreName", label: "Store Name (SEO)", type: "text", placeholder: "Regmi Plastic Traders", span: "half" },
-          { key: "seoPhone", label: "Contact Phone (SEO)", type: "tel", placeholder: "9851012554", span: "half" },
+          { key: "defaultKeywords", label: "Default Keywords (Comma separated)", type: "textarea", placeholder: "plastic products Nepal, Kathmandu plastic store...", span: "full" },
+          { key: "googleVerification", label: "Google Site Verification Code", type: "text", placeholder: "6s2WhSla79iFOwuVhalPqFpAD_K_dczMENIRwJ61e8I", span: "full", hint: "Paste the 'content' value from your Google Search Console meta tag." },
+          { key: "seoPhone", label: "SEO Contact Phone", type: "text", placeholder: "9851012554", span: "half" },
           { key: "seoEmail", label: "Contact Email (SEO)", type: "email", placeholder: "regmiplastictraders@gmail.com", span: "half" },
           { key: "seoAddress", label: "Business Address (SEO)", type: "textarea", placeholder: "Kathmandu Kalimati", span: "full" },
         ],

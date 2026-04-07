@@ -60,6 +60,7 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
   const pageTitle = unwrap(page.pageTitle, "") || unwrap(seo[`${pageId}Title`], "");
   const pageDesc = unwrap(page.pageSubtitle, "") || unwrap(seo[`${pageId}Description`], "") || defaultDesc;
   const pageKeywords = unwrap(seo[`${pageId}Keywords`], "") || defaultTags;
+  const googleVerify = unwrap(seo.googleVerification, "6s2WhSla79iFOwuVhalPqFpAD_K_dczMENIRwJ61e8I");
 
   const titleStr = pageTitle 
     ? `${pageTitle} | ${storeName}` 
@@ -72,6 +73,9 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
     metadataBase: new URL(siteUrl),
     alternates: {
       canonical: pageId === "home" ? siteUrl : `${siteUrl}/${pageId}`,
+    },
+    verification: {
+      google: googleVerify,
     },
     robots: {
       index: true,
