@@ -256,8 +256,8 @@ const PAGES: Record<string, PageDef> = {
         icon: <FiPhone size={14} />,
         description: "Shown in the header, footer contact section, and contact page.",
         fields: [
-          { key: "phone", label: "Primary Phone", type: "tel", placeholder: "+977-9841234567", span: "half" },
-          { key: "phone2", label: "Phone 2 (optional)", type: "tel", placeholder: "+977-9851234567", span: "half" },
+          { key: "phone", label: "Primary Phone", type: "tel", placeholder: "+977-9851012554", span: "half" },
+          { key: "phone2", label: "Phone 2 (optional)", type: "tel", placeholder: "+977-9851012554", span: "half" },
           { key: "email", label: "Primary Email", type: "email", placeholder: "info@regmiplastic.com", span: "half" },
           { key: "email2", label: "Email 2 (optional)", type: "email", placeholder: "sales@regmiplastic.com", span: "half" },
           { key: "address", label: "Physical Address", type: "textarea", placeholder: "Kathmandu, Nepal", span: "full" },
@@ -292,7 +292,7 @@ const PAGES: Record<string, PageDef> = {
         icon: <FiLayout size={14} />,
         description: "Text labels shown in the site navigation bar.",
         fields: [
-          { key: "headerPhone", label: "Header Phone Text", type: "text", placeholder: "+977-9841234567", span: "half" },
+          { key: "headerPhone", label: "Header Phone Text", type: "text", placeholder: "+977-9851012554", span: "half" },
           { key: "headerCTAText", label: "Header Shop Button Text", type: "text", placeholder: "Shop Now", span: "half" },
           { key: "navHome", label: "Nav: Home", type: "text", placeholder: "Home", span: "half" },
           { key: "navProducts", label: "Nav: Products", type: "text", placeholder: "Products", span: "half" },
@@ -572,6 +572,18 @@ const PAGES: Record<string, PageDef> = {
           { key: "globalMetaKeywords", label: "Global Meta Keywords", type: "textarea", placeholder: "plastic store nepal, plastic products kathmandu, regmi plastic, buy plastic goods nepal", span: "full", hint: "Comma-separated keywords (limited SEO impact on Google, still used by some engines)." },
           { key: "globalCanonicalBase", label: "Site Canonical Base URL", type: "url", placeholder: "https://regmiplastictraders.com.np", span: "half", hint: "The root URL of your site, no trailing slash. Used to construct canonical links." },
           { key: "globalRobots", label: "Global Robots Directive", type: "text", placeholder: "index, follow", span: "half", hint: "Controls how crawlers index your site. Typical: 'index, follow'" },
+        ],
+      },
+      {
+        id: "seo-contact",
+        title: "Business Identity & Contact (SEO)",
+        icon: <FiPhone size={14} />,
+        description: "These details are used specifically for Google's Knowledge Graph and local search snippets (JSON-LD).",
+        fields: [
+          { key: "seoStoreName", label: "Store Name (SEO)", type: "text", placeholder: "Regmi Plastic Traders", span: "half" },
+          { key: "seoPhone", label: "Contact Phone (SEO)", type: "tel", placeholder: "9851012554", span: "half" },
+          { key: "seoEmail", label: "Contact Email (SEO)", type: "email", placeholder: "regmiplastictraders@gmail.com", span: "half" },
+          { key: "seoAddress", label: "Business Address (SEO)", type: "textarea", placeholder: "Kathmandu Kalimati", span: "full" },
         ],
       },
       {

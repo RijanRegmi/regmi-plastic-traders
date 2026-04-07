@@ -15,10 +15,33 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const seoData = await fetchSeoData();
-  const storeName = seoData.global.storeName?.value || "Regmi Plastic Traders";
-  const phone = seoData.global.phone?.value || "+977-9851012554";
-  const email = seoData.global.email?.value || "regmiplastictraders@gmail.com";
-  const address = seoData.global.address?.value || "Kathmandu Kalimati";
+  const global = seoData.global;
+  const seo = seoData.seo;
+  
+  // Robust data unwrap for schema (Check SEO overrides first)
+  const getV = (k: string, fallback = ""): string => {
+    // Check for SEO specific key first (e.g. seoPhone), then the base key in global
+    const seoKey = `seo${k.charAt(0).toUpperCase() + k.slice(1)}`;
+    const v = seo[seoKey] || global[k];
+    
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      return (v as { value?: string }).value || fallback;
+    }
+    return typeof v === "string" ? v : fallback;
+  };
+
+  const storeName = getV("storeName", "Regmi Plastic Traders");
+  const phone = getV("phone", "+977-9851012554");
+  const email = getV("email", "regmiplastictraders@gmail.com");
+  const address = getV("address", "Kathmandu Kalimati");
+  
+  // Dynamically build social links for schema
+  const sameAs = [
+    getV("socialFacebook"),
+    getV("socialInstagram"),
+    getV("socialYoutube"),
+    getV("socialWhatsapp") ? `https://wa.me/${getV("socialWhatsapp").replace(/\D/g, '')}` : ""
+  ].filter(Boolean);
   
   const schemas = [
     {
@@ -34,15 +57,13 @@ export default async function RootLayout({
         "addressLocality": "Kathmandu",
         "addressCountry": "NP"
       },
-      "sameAs": [
-        "https://www.facebook.com/regmiplastictraders", // Example, adjust if known
-      ]
+      "sameAs": sameAs
     },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": storeName,
-      "alternateName": "Regmi", // THE KEY FOR THE "REGMI" SEARCH
+      "alternateName": "Regmi",
       "url": "https://www.regmiplastictraders.com.np",
       "potentialAction": {
         "@type": "SearchAction",
@@ -65,7 +86,8 @@ export default async function RootLayout({
         "addressLocality": "Kathmandu",
         "addressRegion": "Bagmati",
         "addressCountry": "NP"
-      }
+      },
+      "sameAs": sameAs
     }
   ];
 
