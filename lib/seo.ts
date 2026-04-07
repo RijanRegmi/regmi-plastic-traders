@@ -67,9 +67,23 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
 
   return {
     title: overrides?.title || titleStr,
-    description: overrides?.description || pageDesc,
+    description: (overrides?.description || pageDesc).slice(0, 160),
     keywords: overrides?.keywords || pageKeywords,
     metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: pageId === "home" ? siteUrl : `${siteUrl}/${pageId}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     applicationName: storeName,
     appleWebApp: {
       title: storeName,
@@ -79,7 +93,7 @@ export async function generateDynamicMetadata(pageId?: string, overrides?: Metad
     openGraph: {
       title: overrides?.title || titleStr,
       description: overrides?.description || pageDesc,
-      url: siteUrl,
+      url: pageId === "home" ? siteUrl : `${siteUrl}/${pageId}`,
       siteName: storeName,
       images: defaultOgImage ? [{ url: defaultOgImage, width: 1200, height: 630 }] : [],
       locale: "en_NP",

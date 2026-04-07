@@ -317,6 +317,7 @@ const PAGES: Record<string, PageDef> = {
           { key: "heroBadge", label: "Badge Pill Text", type: "text", placeholder: "Est. 1995 · Kathmandu, Nepal", span: "full" },
           { key: "heroTitle", label: "Hero Headline", type: "textarea", placeholder: "Nepal's Most Trusted Plastic Goods Store", span: "full" },
           { key: "heroSubtitle", label: "Hero Subtitle Paragraph", type: "textarea", placeholder: "Durable, affordable, and high-quality…", span: "full" },
+          { key: "heroAlt", label: "Hero Image Alt Text (SEO)", type: "text", placeholder: "Regmi Plastic Traders Shop Kathmandu - Durable Plastic Products", span: "full", hint: "Keywords here help your image show up in Google Image results." },
           { key: "heroButtonText", label: "Primary Button Text", type: "text", placeholder: "Shop Now", span: "half" },
           { key: "heroButtonHref", label: "Primary Button Link", type: "text", placeholder: "/products", span: "half" },
           { key: "heroGhostText", label: "Secondary Button Text", type: "text", placeholder: "Our Story", span: "half" },

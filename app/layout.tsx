@@ -88,6 +88,24 @@ export default async function RootLayout({
         "addressCountry": "NP"
       },
       "sameAs": sameAs
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.regmiplastictraders.com.np"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Products",
+          "item": "https://www.regmiplastictraders.com.np/products"
+        }
+      ]
     }
   ];
 

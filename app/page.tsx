@@ -161,6 +161,7 @@ export default async function HomePage() {
   const heroTrust2 = str(cms.heroTrust2, "Quality Guaranteed");
   const heroTrust3 = str(cms.heroTrust3, "Nepal-Wide");
   const heroRatingLbl = str(cms.heroRatingLabel, "Verified Reviews");
+  const heroAlt = str(cms.heroAlt, `${storeName} - Best Plastic Products Store in Kathmandu, Nepal`);
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const statsItems: StatItem[] = [
@@ -256,7 +257,7 @@ export default async function HomePage() {
           {heroBgUrl && (
             <Image
               src={heroBgUrl}
-              alt="Hero Background"
+              alt={heroAlt}
               fill
               className="rpt-hero__bg-img"
               style={{ objectFit: 'cover' }}
