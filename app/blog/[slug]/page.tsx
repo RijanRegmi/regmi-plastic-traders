@@ -70,7 +70,7 @@ export default async function BlogPostPage({
 
       {/* Hero — with cover image if available */}
       <div
-        className="rpt-post-hero"
+        className={`rpt-post-hero ${post.coverImage ? "rpt-post-hero--has-image" : ""}`}
         style={
           post.coverImage
             ? {
@@ -112,8 +112,12 @@ export default async function BlogPostPage({
         {/* Default bg (only shows when no cover image) */}
         {!post.coverImage && <div className="rpt-page-hero__bg" />}
 
-        <Reveal direction="up" className="rpt-post-hero__content" style={{ position: "relative", zIndex: 2 }}>
-          <Link href="/blog" className="rpt-back-link">
+        <Reveal direction="up" className="rpt-post-hero__content" style={{ position: "relative", zIndex: 2, color: post.coverImage ? "#ffffff" : "inherit" }}>
+          <Link 
+            href="/blog" 
+            className="rpt-back-link"
+            style={post.coverImage ? { color: "#ffffff", opacity: 0.8 } : undefined}
+          >
             <FiArrowLeft size={14} /> Back to Blog
           </Link>
           {post.tags?.length > 0 && (
@@ -125,9 +129,17 @@ export default async function BlogPostPage({
               ))}
             </div>
           )}
-          <h1 className="rpt-post-hero__title">{post.title}</h1>
-          <div className="rpt-post-hero__meta">
-            <span>
+          <h1 
+            className="rpt-post-hero__title"
+            style={post.coverImage ? { color: "#ffffff" } : undefined}
+          >
+            {post.title}
+          </h1>
+          <div 
+            className="rpt-post-hero__meta"
+            style={post.coverImage ? { color: "rgba(255,255,255,0.7)" } : undefined}
+          >
+            <span style={post.coverImage ? { color: "rgba(255,255,255,0.7)" } : undefined}>
               <FiCalendar size={13} />{" "}
               {new Date(post.createdAt).toLocaleDateString("en-US", {
                 month: "long",
@@ -135,7 +147,7 @@ export default async function BlogPostPage({
                 year: "numeric",
               })}
             </span>
-            <span>
+            <span style={post.coverImage ? { color: "rgba(255,255,255,0.7)" } : undefined}>
               <FiUser size={13} /> {post.author}
             </span>
           </div>

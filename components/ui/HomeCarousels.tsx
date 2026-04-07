@@ -143,6 +143,7 @@ function Dots({
 // Clone VISIBLE items from each end so the track is always full
 function buildPadded<T>(items: T[]): T[] {
   const n = items.length;
+  if (n === 0) return [];
   const head = items.slice(n - VISIBLE); // last N items → prepended
   const tail = items.slice(0, VISIBLE); // first N items → appended
   return [...head, ...items, ...tail];
@@ -150,9 +151,6 @@ function buildPadded<T>(items: T[]): T[] {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function useInfiniteCarousel(count: number, intervalMs: number) {
-  // We keep a mutable ref to the track DOM node so we can set its transform
-  // via a ref-callback that fires synchronously before the browser paints —
-  // this is what eliminates the empty-space flash on first render.
   const trackNodeRef = useRef<HTMLDivElement | null>(null);
   const posRef = useRef(VISIBLE); // current padded index
   const pausedRef = useRef(false);
@@ -160,34 +158,36 @@ function useInfiniteCarousel(count: number, intervalMs: number) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [dotIdx, setDotIdx] = useState(0);
 
-  const px = (p: number) => p * STEP;
+  const px = useCallback((p: number) => p * STEP, []);
 
   const animTo = useCallback((p: number) => {
     const t = trackNodeRef.current;
     if (!t) return;
     t.style.transition = `transform ${ANIM_MS}ms cubic-bezier(0.25,0.46,0.45,0.94)`;
     t.style.transform = `translateX(-${px(p)}px)`;
-  }, []);
+  }, [px]);
 
   const snapTo = useCallback((p: number) => {
     const t = trackNodeRef.current;
     if (!t) return;
     t.style.transition = "none";
     t.style.transform = `translateX(-${px(p)}px)`;
-  }, []);
+  }, [px]);
 
-  // ── ref callback: called the moment the <div> is inserted into the DOM,
-  //    before the first paint, so the initial position is correct immediately.
   const trackRef = useCallback(
     (node: HTMLDivElement | null) => {
       trackNodeRef.current = node;
       if (node) {
-        node.style.transition = "none";
-        node.style.transform = `translateX(-${px(VISIBLE)}px)`;
+        if (count > VISIBLE) {
+          node.style.transition = "none";
+          node.style.transform = `translateX(-${px(VISIBLE)}px)`;
+        } else {
+          node.style.transition = "none";
+          node.style.transform = "none";
+        }
       }
     },
-    // px uses STEP which is a module constant — safe to exclude from deps
-    [], // eslint-disable-line
+    [count, px],
   );
 
   const slide = useCallback(
@@ -258,7 +258,8 @@ function useInfiniteCarousel(count: number, intervalMs: number) {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function HomeReviewsCarousel({ reviews }: { reviews: Review[] }) {
   const count = reviews.length;
-  const padded = count > 0 ? buildPadded(reviews) : [];
+  const isInfinite = count > VISIBLE;
+  const padded = isInfinite ? buildPadded(reviews) : reviews;
   const { dotIdx, trackRef, pausedRef, next, prev, goToDot, startTimer } =
     useInfiniteCarousel(count, 4000);
 
@@ -277,7 +278,13 @@ export function HomeReviewsCarousel({ reviews }: { reviews: Review[] }) {
       <div style={{ overflow: "hidden" }}>
         <div
           ref={trackRef}
-          style={{ display: "flex", gap: GAP, willChange: "transform" }}
+          style={{ 
+            display: "flex", 
+            gap: GAP, 
+            willChange: "transform",
+            justifyContent: isInfinite ? "flex-start" : "center",
+            transform: isInfinite ? undefined : "none"
+          }}
         >
           {padded.map((r, i) => (
             <div key={i} style={{ flexShrink: 0, width: CARD_W }}>
@@ -341,7 +348,8 @@ export function HomeReviewsCarousel({ reviews }: { reviews: Review[] }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 export function HomeBlogCarousel({ blogs }: { blogs: BlogPost[] }) {
   const count = blogs.length;
-  const padded = count > 0 ? buildPadded(blogs) : [];
+  const isInfinite = count > VISIBLE;
+  const padded = isInfinite ? buildPadded(blogs) : blogs;
   const { dotIdx, trackRef, pausedRef, next, prev, goToDot, startTimer } =
     useInfiniteCarousel(count, 5000);
 
@@ -360,7 +368,13 @@ export function HomeBlogCarousel({ blogs }: { blogs: BlogPost[] }) {
       <div style={{ overflow: "hidden" }}>
         <div
           ref={trackRef}
-          style={{ display: "flex", gap: GAP, willChange: "transform" }}
+          style={{ 
+            display: "flex", 
+            gap: GAP, 
+            willChange: "transform",
+            justifyContent: isInfinite ? "flex-start" : "center",
+            transform: isInfinite ? undefined : "none"
+          }}
         >
           {padded.map((b, i) => (
             <div key={i} style={{ flexShrink: 0, width: CARD_W }}>

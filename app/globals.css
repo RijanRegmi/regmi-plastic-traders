@@ -2633,6 +2633,21 @@ html {
   flex-wrap: wrap;
 }
 
+.rpt-post-hero--has-image .rpt-post-hero__title,
+.rpt-post-hero--has-image .rpt-back-link,
+.rpt-post-hero--has-image .rpt-post-hero__meta {
+  color: #ffffff !important;
+}
+
+.rpt-post-hero--has-image .rpt-post-hero__meta span {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.rpt-post-hero--has-image .rpt-back-link:hover {
+  color: #ffffff !important;
+  opacity: 0.8;
+}
+
 .rpt-post-hero__meta span {
   display: flex;
   align-items: center;
