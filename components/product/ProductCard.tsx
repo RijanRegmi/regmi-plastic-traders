@@ -47,10 +47,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "40px" }}
       transition={{ duration: 0.25 }}
-      className="rpt-pc"
+      className="rpt-pc--premium"
     >
       {/* ── Image ── */}
       <Link href={`/products/${product.slug}`} className="rpt-pc__img-wrap">
+        <div className="rpt-pc__glass-overlay">
+          <span className="rpt-pc__quick-view">View Details</span>
+        </div>
         {firstImage ? (
           <Image
             src={firstImage}
@@ -65,7 +68,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {product.badge && (
           <span className={`rpt-pc__badge ${BADGE_CLASS[product.badge] || "rpt-pc__badge--red"}`}>
+            <span className="rpt-pc__badge-dot"></span>
             {product.badge}
+          </span>
+        )}
+
+        {product.category && (
+          <span className="rpt-pc__cat-chip">
+            {product.category}
           </span>
         )}
 
